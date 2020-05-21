@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "423660988930",
+    "firebase_url": "https://soccerapp-95e84.firebaseio.com",
+    "project_id": "soccerapp-95e84",
+    "storage_bucket": "soccerapp-95e84.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:423660988930:android:8718792b92ef935fa7951b",
+        "android_client_info": {
+          "package_name": "com.example.cegepsoccerleague"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "423660988930-358s9ko5sc1u62ac2eg7s3iomdr31nlb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTTvtJIvJFUlrxfEzms9j94JQf_8UBRgQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "423660988930-358s9ko5sc1u62ac2eg7s3iomdr31nlb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
