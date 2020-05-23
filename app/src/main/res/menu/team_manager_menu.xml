@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/tm_team"
+        android:title="Your Team"
+        android:icon="@drawable/your_team_icon" />
+
+    <item android:id="@+id/tm_matches"
+        android:title="Your Matches"
+        android:icon="@drawable/your_matches_icon" />
+
+    <item android:id="@+id/tm_profile"
+        android:title="Update Profile"
+        android:icon="@drawable/update_profile_icon" />
+
+    <item android:id="@+id/lgm_logout"
+        android:title="Logout"
+        android:icon="@drawable/logout_icon" />
+
+</menu>
