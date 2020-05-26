@@ -44,7 +44,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         signup_on_login_btn = findViewById(R.id.signup_on_login_btn);
         guest_on_login_btn = findViewById(R.id.guest_on_login_btn);
 
-        //Creating Reference of Set On Click Listener
+        //Creating Reference of Set On Click Listener and connect to the OnCLick method
         login_btn.setOnClickListener(this);
         signup_on_login_btn.setOnClickListener(this);
         guest_on_login_btn.setOnClickListener(this);
@@ -59,6 +59,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         if (view == login_btn) {
+            //getting value of email and password layout
             String email = login_email.getEditText().getText().toString().trim();
             String password = login_password.getEditText().getText().toString().trim();
             if(!isEmailValid(email)){
@@ -80,10 +81,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         else if (view == login_forgot_pass_txt) {
             startActivity(new Intent(LoginActivity.this,ForgotPasswordActivity.class));
         }
-
     }
 
-    private void login_user(String email, String password) {
+    private void login_user(final String email, final String password) {
         login_btn.setEnabled(false);
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -93,14 +93,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             // Sign in success, update UI with the signed-in user's information
                             user = mAuth.getCurrentUser();
                             login_btn.setEnabled(true);
+                            PreferenceData.setUserpassword(getApplicationContext(),password);
+                            PreferenceData.setUseremail(getApplicationContext(),email);
                             Toast.makeText(LoginActivity.this, "Login Successfull!", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(LoginActivity.this,DashboardActivity.class));
                             finish();
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(LoginActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                            login_btn.setEnabled(true);
-
                         }
                     }
                 });

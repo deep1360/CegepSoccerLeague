@@ -2,11 +2,6 @@ package com.example.cegepsoccerleague;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,11 +9,18 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,7 +44,7 @@ public class UpdateProfileFragment extends Fragment implements View.OnClickListe
     private FirebaseAuth mAuth;
     private FirebaseUser user;
     private Context context;
-    private String user_type;
+    private String user_type,user_email;
     public NavController HomeNavController;
 
     public UpdateProfileFragment() {
@@ -92,6 +94,7 @@ public class UpdateProfileFragment extends Fragment implements View.OnClickListe
                         update_firstname.getEditText().setText(document.getData().get("first_name").toString());
                         update_lastname.getEditText().setText(document.getData().get("last_name").toString());
                         user_type = document.getData().get("user_type").toString();
+                        user_email = document.getData().get("email").toString();
                     }
                 }
             }
@@ -128,18 +131,19 @@ public class UpdateProfileFragment extends Fragment implements View.OnClickListe
         }
     }
 
-    private void update_User(final String first_name, final String last_name, String password) {
+    private void update_User(final String first_name, final String last_name, final String password) {
         update_profile_btn.setEnabled(false);
         user.updatePassword(password)
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-
+                            PreferenceData.setUserpassword(context,password);
                             final Map<String, Object> usermap = new HashMap<>();
                             usermap.put("first_name", first_name);
                             usermap.put("last_name", last_name);
                             usermap.put("user_type",user_type);
+                            usermap.put("email",user_email);
                             // Add a new document with user's generated ID in authentication
                             db.collection("users")
                                     .document(user.getUid())
@@ -156,6 +160,15 @@ public class UpdateProfileFragment extends Fragment implements View.OnClickListe
                                     }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
+                                    user.updatePassword(PreferenceData.getUserpassword(context))
+                                            .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+
+                                                    }
+                                                }
+                                            });
                                     Toast.makeText(context,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
                                     update_profile_btn.setEnabled(true);
                                 }

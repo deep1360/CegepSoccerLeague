@@ -15,4 +15,14 @@
         android:name="com.example.cegepsoccerleague.UpdateProfileFragment"
         android:label="Update Profile"
         tools:layout="@layout/fragment_update_profile" />
+    <fragment
+        android:id="@+id/listOfLeaguesFragment"
+        android:name="com.example.cegepsoccerleague.ListOfLeaguesFragment"
+        android:label="Your Leagues"
+        tools:layout="@layout/fragment_list_of_leagues" />
+    <fragment
+        android:id="@+id/addLeagueFragment"
+        android:name="com.example.cegepsoccerleague.AddLeagueFragment"
+        android:label="Add League"
+        tools:layout="@layout/fragment_add_league" />
 </navigation>

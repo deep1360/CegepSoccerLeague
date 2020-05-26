@@ -114,6 +114,11 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
         switch (item.getItemId()){
             case R.id.lgm_leagues:
+                if(HomeNavController.getCurrentDestination().getId()==R.id.homeFragment) {
+                    Bundle dataBundle = new Bundle();
+                    dataBundle.putString("from","your-leagues");
+                    HomeNavController.navigate(R.id.listOfLeaguesFragment,dataBundle);
+                }
                 break;
             case R.id.lgm_profile:
                 if(HomeNavController.getCurrentDestination().getId()==R.id.homeFragment) {
@@ -122,6 +127,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 break;
             case R.id.lgm_logout:
                 mAuth.signOut();
+                PreferenceData.clearUserData(getApplicationContext());
                 startActivity(new Intent(DashboardActivity.this,LoginActivity.class));
                 finish();
                 break;

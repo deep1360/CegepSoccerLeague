@@ -1,15 +1,16 @@
 package com.example.cegepsoccerleague;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -44,7 +45,6 @@ public class HomeFragment extends Fragment implements BottomNavigationView.OnNav
         //Referencing bottom item with click listener
         home_bottom_bar.setOnNavigationItemSelectedListener(this);
 
-
     }
 
     //Changeing Fragment on Clicking Bottom Bar Item
@@ -52,9 +52,10 @@ public class HomeFragment extends Fragment implements BottomNavigationView.OnNav
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.scoreboard_item:
-                homeFragManager.beginTransaction().replace(R.id.fragment_container, new ScoreboardFragment()).commit();
+                homeFragManager.beginTransaction().replace(R.id.fragment_container, new ScoreboardFragment(), "ScoreboardFragment").commit();
                 break;
             case R.id.leagues_item:
+                homeFragManager.beginTransaction().replace(R.id.fragment_container, new ListOfLeaguesFragment(), "LeaguesFragment").commit();
                 break;
             case R.id.up_match_item:
                 break;
