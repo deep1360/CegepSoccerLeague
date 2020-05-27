@@ -1,11 +1,8 @@
 package com.example.cegepsoccerleague;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +11,11 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -117,36 +119,42 @@ public class ListOfLeaguesFragment extends Fragment implements View.OnClickListe
 
         //Fetching data and assigning it to Recycler View to Display On Screen
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                LeaguesArrayList.add(new Leagues_List_model(document.getId(),
-                                        document.get("league_name").toString(),
-                                        document.get("league_icon").toString(),
-                                        document.get("league_manager_id").toString()));
-                            }
-                            leagues_rec_adapter.notifyDataSetChanged();
-                            leagues_rec_adapter.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-
-                                    RecyclerView.ViewHolder viewHolder = (RecyclerView.ViewHolder) view.getTag();
-                                    int position = viewHolder.getAdapterPosition();
-                                    Bundle dataBundle = new Bundle();
-                                    dataBundle.putString("league_id", LeaguesArrayList.get(position).getLeague_id());
-                                    dataBundle.putString("league_name", LeaguesArrayList.get(position).getLeague_name());
-                                    dataBundle.putString("league_icon", LeaguesArrayList.get(position).getLeague_icon());
-                                    if(getArguments()!=null){
-
-                                    }
-                                }
-                            });
-                        } else {
-                            Toast.makeText(context,task.getException().getLocalizedMessage(),Toast.LENGTH_LONG).show();
-                        }
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        LeaguesArrayList.add(new Leagues_List_model(document.getId(),
+                                document.get("league_name").toString(),
+                                document.get("league_icon").toString(),
+                                document.get("league_manager_id").toString()));
                     }
-                });
+                    leagues_rec_adapter.notifyDataSetChanged();
+                    leagues_rec_adapter.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            RecyclerView.ViewHolder viewHolder = (RecyclerView.ViewHolder) view.getTag();
+                            int position = viewHolder.getAdapterPosition();
+                            Bundle dataBundle = new Bundle();
+                            dataBundle.putString("league_id", LeaguesArrayList.get(position).getLeague_id());
+                            dataBundle.putString("league_name", LeaguesArrayList.get(position).getLeague_name());
+                            dataBundle.putString("league_icon", LeaguesArrayList.get(position).getLeague_icon());
+                            if(getArguments()!=null){
+                                if(getArguments().getString("from").equals("your-leagues")) {
+                                    HomeNavController.navigate(R.id.leagueFeaturesFragment,dataBundle);
+                                }
+                            }
+                            else {
+                                dataBundle.putString("from","guest dashboard");
+                                HomeNavController.navigate(R.id.listOfTeamsFragment,dataBundle);
+                            }
+                        }
+                    });
+                } else {
+                    Toast.makeText(context,task.getException().getLocalizedMessage(),Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     @Override

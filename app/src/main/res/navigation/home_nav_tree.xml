@@ -25,4 +25,18 @@
         android:name="com.example.cegepsoccerleague.AddLeagueFragment"
         android:label="Add League"
         tools:layout="@layout/fragment_add_league" />
+    <fragment
+        android:id="@+id/leagueFeaturesFragment"
+        android:name="com.example.cegepsoccerleague.LeagueFeaturesFragment"
+        tools:layout="@layout/fragment_league_features" />
+    <fragment
+        android:id="@+id/addTeamFragment"
+        android:name="com.example.cegepsoccerleague.AddTeamFragment"
+        android:label="Add Team"
+        tools:layout="@layout/fragment_add_team" />
+    <fragment
+        android:id="@+id/listOfTeamsFragment"
+        android:name="com.example.cegepsoccerleague.ListOfTeamsFragment"
+        android:label="fragment_list_of_teams"
+        tools:layout="@layout/fragment_list_of_teams" />
 </navigation>
