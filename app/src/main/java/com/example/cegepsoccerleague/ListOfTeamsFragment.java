@@ -2,9 +2,6 @@ package com.example.cegepsoccerleague;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,12 +11,27 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -99,6 +111,19 @@ public class ListOfTeamsFragment extends Fragment implements View.OnClickListene
 
         create_team_btn.setOnClickListener(this);
 
+        teams_rec_adapter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle dataBundle = new Bundle();
+                if(getArguments()!=null){
+                    if(getArguments().getString("from")!=null && getArguments().getString("from").equals("guest dashboard")){
+                        dataBundle.putString("from","guest dashboard");
+                    }
+                }
+                HomeNavController.navigate(R.id.listOfPlayersFragment,dataBundle);
+            }
+        });
+
     }
 
     @Override
@@ -113,5 +138,6 @@ public class ListOfTeamsFragment extends Fragment implements View.OnClickListene
     @Override
     public void onResume() {
         super.onResume();
+
     }
 }

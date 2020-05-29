@@ -96,6 +96,8 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                             HomeNavigationView.inflateMenu(R.menu.legue_manager_menu);
                         }
                         else if(document.getData().get("user_type").equals("TM")){
+                            HomeNavigationView.getMenu().clear();
+                            HomeNavigationView.inflateMenu(R.menu.team_manager_menu);
                         }
                     }
                 }
@@ -126,6 +128,24 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 }
                 break;
             case R.id.lgm_logout:
+                mAuth.signOut();
+                PreferenceData.clearUserData(getApplicationContext());
+                startActivity(new Intent(DashboardActivity.this,LoginActivity.class));
+                finish();
+                break;
+            case R.id.tm_team:
+                if(HomeNavController.getCurrentDestination().getId()==R.id.homeFragment) {
+                    HomeNavController.navigate(R.id.tmYourTeamFragment);
+                }
+                break;
+            case R.id.tm_profile:
+                if(HomeNavController.getCurrentDestination().getId()==R.id.homeFragment) {
+                    HomeNavController.navigate(R.id.updateProfileFragment);
+                }
+                break;
+            case R.id.tm_matches:
+                break;
+            case R.id.tm_logout:
                 mAuth.signOut();
                 PreferenceData.clearUserData(getApplicationContext());
                 startActivity(new Intent(DashboardActivity.this,LoginActivity.class));

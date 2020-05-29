@@ -11,4 +11,5 @@
     <color name="colorVarientLight">#ff5340</color>
     <color name="colorVarientDark">#9c0000</color>
     <color name="darkerGrey">#7d7d7d</color>
+    <color name="textBlackGrey">#434343</color>
 </resources>

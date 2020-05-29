@@ -13,7 +13,7 @@
         android:title="Update Profile"
         android:icon="@drawable/update_profile_icon" />
 
-    <item android:id="@+id/lgm_logout"
+    <item android:id="@+id/tm_logout"
         android:title="Logout"
         android:icon="@drawable/logout_icon" />
 

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".PlayerInfoFragment">
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:cardElevation="4dp"
+        app:strokeColor="@color/colorAccent"
+        app:strokeWidth="2dp"
+        app:cardCornerRadius="10dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/player_info_icon_cv"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                app:cardCornerRadius="75dp"
+                android:layout_marginTop="24dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:strokeColor="@color/colorPrimary"
+                app:strokeWidth="2dp">
+
+                <ImageView
+                    android:layout_gravity="center"
+                    android:src="@drawable/add_player_icon"
+                    android:id="@+id/player_info_img_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintStart_toStartOf="@id/player_info_name"
+                app:layout_constraintEnd_toEndOf="@id/player_info_name"
+                app:layout_constraintTop_toTopOf="@id/player_info_name"
+                app:layout_constraintBottom_toBottomOf="@id/player_info_name"
+                android:background="@color/colorAccent"
+                android:alpha="0.5"/>
+
+            <TextView
+                android:id="@+id/player_info_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Team Name"
+                android:textColor="@color/colorPrimary"
+                android:textSize="22sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/player_info_icon_cv"
+                android:padding="16dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/player_info_age"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="Age"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/player_info_name"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:textColor="@color/textBlackGrey"/>
+
+            <View
+                android:id="@+id/team_info_divider1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorAccent"
+                app:layout_constraintTop_toBottomOf="@id/player_info_age"/>
+
+
+            <TextView
+                android:id="@+id/player_info_position"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="Position"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/team_info_divider1"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:textColor="@color/textBlackGrey"/>
+
+            <View
+                android:id="@+id/team_info_divider2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorAccent"
+                app:layout_constraintTop_toBottomOf="@id/player_info_position"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/edit_player_info_btn"
+                app:layout_constraintEnd_toStartOf="@id/delete_player_btn"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/team_info_divider2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="16dp"
+                android:padding="16dp"
+                android:text="Update Player"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:backgroundTint="@color/colorPrimary"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/delete_player_btn"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/edit_player_info_btn"
+                app:layout_constraintTop_toBottomOf="@id/team_info_divider2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="16dp"
+                android:padding="16dp"
+                android:text="Delete Player"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:backgroundTint="@color/colorVarient"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+</ScrollView>
