@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".LgmTeamInfoFragment">
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/delete_team_btn"
+        style="@style/Widget.Design.FloatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="24dp"
+        android:src="@drawable/delete_icon"
+        app:maxImageSize="28dp"
+        app:tint="@android:color/white"
+        android:backgroundTint="@color/colorVarient"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:cardElevation="4dp"
+                app:strokeColor="@color/colorAccent"
+                app:strokeWidth="2dp"
+                app:cardCornerRadius="10dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/lgm_team_info_icon_cv"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        app:cardCornerRadius="50dp"
+                        android:layout_marginStart="16dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="@id/vertical_divider"
+                        app:strokeColor="@color/colorPrimary"
+                        app:strokeWidth="2dp">
+
+                        <ImageView
+                            android:layout_gravity="center"
+                            android:src="@drawable/add_team_icon"
+                            android:id="@+id/lgm_team_info_img_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"/>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <View
+                        android:id="@+id/vertical_divider"
+                        android:layout_width="1dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintStart_toEndOf="@id/lgm_team_info_icon_cv"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="@id/lgm_team_manager_email"
+                        android:layout_marginStart="16dp"
+                        android:background="@color/colorAccent"/>
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintStart_toStartOf="@id/lgm_team_info_name"
+                        app:layout_constraintEnd_toEndOf="@id/lgm_team_info_name"
+                        app:layout_constraintTop_toTopOf="@id/lgm_team_info_name"
+                        app:layout_constraintBottom_toBottomOf="@id/lgm_team_info_name"
+                        android:background="@color/colorAccent"
+                        android:alpha="0.5"/>
+
+                    <TextView
+                        android:id="@+id/lgm_team_info_name"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Team Name"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="22sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/vertical_divider"
+                        android:gravity="center"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:padding="16dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/lgm_team_manager_txt"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Team Manager"
+                        android:textColor="@color/textBlackGrey"
+                        app:layout_constraintStart_toStartOf="@id/lgm_team_info_name"
+                        app:layout_constraintTop_toBottomOf="@id/lgm_team_info_name"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:paddingStart="8dp"
+                        android:paddingTop="4dp"/>
+
+                    <TextView
+                        android:id="@+id/lgm_team_manager_name"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Team Manager Name"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="@id/lgm_team_info_name"
+                        app:layout_constraintTop_toBottomOf="@id/lgm_team_manager_txt"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:paddingStart="8dp"
+                        android:paddingTop="4dp"/>
+
+                    <TextView
+                        android:id="@+id/lgm_team_manager_contact"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Contact number"
+                        android:textColor="@color/textBlackGrey"
+                        app:layout_constraintStart_toStartOf="@id/lgm_team_info_name"
+                        app:layout_constraintTop_toBottomOf="@id/lgm_team_manager_name"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:paddingStart="8dp"
+                        android:paddingTop="4dp"/>
+
+                    <TextView
+                        android:id="@+id/lgm_team_manager_email"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Email"
+                        android:textColor="@color/textBlackGrey"
+                        app:layout_constraintStart_toStartOf="@id/lgm_team_info_name"
+                        app:layout_constraintTop_toBottomOf="@id/lgm_team_manager_contact"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:paddingStart="8dp"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="8dp"/>
+
+
+
+
+                    <View
+                        android:id="@+id/lgm_team_info_divider_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/vertical_divider"
+                        android:background="@color/colorAccent" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintStart_toStartOf="@id/lgm_team_player_txt"
+                        app:layout_constraintEnd_toEndOf="@id/lgm_team_player_txt"
+                        app:layout_constraintTop_toTopOf="@id/lgm_team_player_txt"
+                        app:layout_constraintBottom_toBottomOf="@id/lgm_team_player_txt"
+                        android:background="@color/colorAccent"
+                        android:alpha="0.5"/>
+
+                    <TextView
+                        android:id="@+id/lgm_team_player_txt"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Team Players"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="22sp"
+                        app:layout_constraintTop_toBottomOf="@id/lgm_team_info_divider_1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:gravity="center"
+                        android:padding="16dp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:id="@+id/lgm_team_players_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/lgm_team_player_txt"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:orientation="vertical"/>
+
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

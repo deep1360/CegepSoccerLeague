@@ -118,9 +118,12 @@ public class ListOfTeamsFragment extends Fragment implements View.OnClickListene
                 if(getArguments()!=null){
                     if(getArguments().getString("from")!=null && getArguments().getString("from").equals("guest dashboard")){
                         dataBundle.putString("from","guest dashboard");
+                        HomeNavController.navigate(R.id.listOfPlayersFragment,dataBundle);
+                    }
+                    else {
+                        HomeNavController.navigate(R.id.lgmTeamInfoFragment);
                     }
                 }
-                HomeNavController.navigate(R.id.listOfPlayersFragment,dataBundle);
             }
         });
 
@@ -138,6 +141,5 @@ public class ListOfTeamsFragment extends Fragment implements View.OnClickListene
     @Override
     public void onResume() {
         super.onResume();
-
     }
 }

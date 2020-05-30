@@ -144,6 +144,9 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 }
                 break;
             case R.id.tm_matches:
+                if(HomeNavController.getCurrentDestination().getId()==R.id.homeFragment) {
+                    HomeNavController.navigate(R.id.listOfSchedulesFragment);
+                }
                 break;
             case R.id.tm_logout:
                 mAuth.signOut();

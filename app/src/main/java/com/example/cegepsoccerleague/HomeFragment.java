@@ -58,6 +58,7 @@ public class HomeFragment extends Fragment implements BottomNavigationView.OnNav
                 homeFragManager.beginTransaction().replace(R.id.fragment_container, new ListOfLeaguesFragment(), "LeaguesFragment").commit();
                 break;
             case R.id.up_match_item:
+                homeFragManager.beginTransaction().replace(R.id.fragment_container, new ListOfSchedulesFragment(), "UpcomingFragment").commit();
                 break;
         }
         return true;

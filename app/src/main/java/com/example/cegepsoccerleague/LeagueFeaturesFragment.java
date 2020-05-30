@@ -2,9 +2,6 @@ package com.example.cegepsoccerleague;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,6 +9,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -79,7 +80,11 @@ public class LeagueFeaturesFragment extends Fragment implements View.OnClickList
             HomeNavController.navigate(R.id.listOfTeamsFragment,dataBundle);
         }
         else if(view==lgm_ft_schedule_cv){
-
+            Bundle dataBundle = new Bundle();
+            dataBundle.putString("league_id",league_id);
+            dataBundle.putString("league_name",league_name);
+            dataBundle.putString("from","league Features");
+            HomeNavController.navigate(R.id.listOfSchedulesFragment,dataBundle);
         }
         else if(view==lgm_ft_scoreboard_cv){
 

@@ -183,7 +183,7 @@
 
                     <TextView
                         android:id="@+id/lgm_ft_scoreboard_txt"
-                        android:text="Schedule"
+                        android:text="Scoreboard"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorPrimary"

@@ -31,6 +31,7 @@
         <item name="android:fontFamily">serif</item>
     </style>
 
+    <!-- This is style for Edit Text -->
     <style name="TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxBackgroundMode">outline</item>
         <item name="boxStrokeColor">@color/user_auth_default_textinput_border_color</item>
@@ -42,7 +43,7 @@
         <item name="endIconTint">@color/colorPrimary</item>
         <item name="errorIconTint">@color/colorError</item>
     </style>
-
+    <!-- This is style for Edit Text -->
     <style name="TextInputEditTextStyle" parent="Base.Widget.MaterialComponents.TextInputEditText">
         <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:textSize">18sp</item>
@@ -50,20 +51,27 @@
         <item name="android:textColorHint">@color/colorPrimary</item>
     </style>
 
+    <!-- This is style for Side Menu -->
     <style name="NavDrawerTexApptStyle" parent="TextAppearance.AppCompat.Menu">
         <item name="android:fontFamily">serif</item>
         <item name="android:textSize">18sp</item>
     </style>
 
+    <!-- This is style for Side Menu Item Height-->
     <style name="NavigationTheme" parent="AppTheme">
         <item name="listPreferredItemHeightSmall">50dp</item><!-- menu item height- vary as u need -->
     </style>
 
+    <!-- This is style for Application Title bar design -->
     <style name="ToolbarAppearance" parent="Widget.AppCompat.Toolbar">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:fontFamily">serif</item>
         <item name="android:textSize">20sp</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="PickerTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
 </resources>

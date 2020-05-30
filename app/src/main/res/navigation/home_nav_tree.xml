@@ -37,7 +37,6 @@
     <fragment
         android:id="@+id/listOfTeamsFragment"
         android:name="com.example.cegepsoccerleague.ListOfTeamsFragment"
-        android:label="fragment_list_of_teams"
         tools:layout="@layout/fragment_list_of_teams" />
     <fragment
         android:id="@+id/tmYourTeamFragment"
@@ -64,4 +63,19 @@
         android:name="com.example.cegepsoccerleague.PlayerInfoFragment"
         android:label="Team Players"
         tools:layout="@layout/fragment_player_info" />
+    <fragment
+        android:id="@+id/lgmTeamInfoFragment"
+        android:name="com.example.cegepsoccerleague.LgmTeamInfoFragment"
+        android:label="Team Name"
+        tools:layout="@layout/fragment_lgm_team_info" />
+    <fragment
+        android:id="@+id/listOfSchedulesFragment"
+        android:name="com.example.cegepsoccerleague.ListOfSchedulesFragment"
+        android:label="Schedules"
+        tools:layout="@layout/fragment_list_of_schedules" />
+    <fragment
+        android:id="@+id/addScheduleFragment"
+        android:name="com.example.cegepsoccerleague.AddScheduleFragment"
+        android:label="Add Schedule"
+        tools:layout="@layout/fragment_add_schedule" />
 </navigation>
