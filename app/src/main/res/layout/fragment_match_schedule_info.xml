@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MatchScheduleInfoFragment">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="4dp"
+                app:strokeColor="@color/colorAccent"
+                app:strokeWidth="2dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="16dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/schedule_info_teams_cv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="@color/colorAccent">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/schedule_info_teams_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingBottom="8dp">
+
+                            <View
+                                android:id="@+id/schedule_info_dt_bg_view"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:alpha="0.5"
+                                android:background="@color/colorAccent"
+                                app:layout_constraintBottom_toBottomOf="@id/schedule_info_date"
+                                app:layout_constraintEnd_toEndOf="@id/schedule_info_time"
+                                app:layout_constraintStart_toStartOf="@id/schedule_info_date"
+                                app:layout_constraintTop_toTopOf="@id/schedule_info_date" />
+
+                            <TextView
+                                android:id="@+id/schedule_info_date"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:padding="4dp"
+                                android:paddingStart="8dp"
+                                android:text="Date"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/schedule_info_time"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:padding="4dp"
+                                android:paddingEnd="8dp"
+                                android:text="Time"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintEnd_toEndOf="@id/schedule_info_dt_bg_view"
+                                app:layout_constraintStart_toStartOf="@id/schedule_info_dt_bg_view"
+                                app:layout_constraintTop_toBottomOf="@id/schedule_info_dt_bg_view">
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/schedule_team1_info_icon_cv"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:layout_marginTop="16dp"
+                                    app:cardCornerRadius="30dp"
+                                    app:layout_constraintBottom_toTopOf="@id/schedule_team1_info_name"
+                                    app:layout_constraintEnd_toStartOf="@id/schedule_info_vs_img_view"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:strokeColor="@color/colorPrimary"
+                                    app:strokeWidth="2dp">
+
+                                    <ImageView
+                                        android:id="@+id/schedule_team1_info_img_view"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:layout_gravity="center"
+                                        android:scaleType="centerCrop"
+                                        android:src="@drawable/add_team_icon" />
+                                </com.google.android.material.card.MaterialCardView>
+
+                                <TextView
+                                    android:id="@+id/schedule_team1_info_name"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:padding="4dp"
+                                    android:text="Team 1 Name"
+                                    android:textColor="@color/textBlackGrey"
+                                    android:textStyle="bold"
+                                    app:layout_constraintEnd_toStartOf="@id/schedule_info_vs_img_view"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@id/schedule_team1_info_icon_cv" />
+
+
+                                <ImageView
+                                    android:id="@+id/schedule_info_vs_img_view"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:src="@drawable/vs"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/schedule_team2_info_icon_cv"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:layout_marginTop="16dp"
+                                    app:cardCornerRadius="30dp"
+                                    app:layout_constraintBottom_toTopOf="@id/schedule_team2_info_name"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toEndOf="@id/schedule_info_vs_img_view"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:strokeColor="@color/colorPrimary"
+                                    app:strokeWidth="2dp">
+
+                                    <ImageView
+                                        android:id="@+id/schedule_team2_info_img_view"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:layout_gravity="center"
+                                        android:scaleType="centerCrop"
+                                        android:src="@drawable/add_team_icon" />
+                                </com.google.android.material.card.MaterialCardView>
+
+                                <TextView
+                                    android:id="@+id/schedule_team2_info_name"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:padding="4dp"
+                                    android:text="Team 2 Name"
+                                    android:textColor="@color/textBlackGrey"
+                                    android:textStyle="bold"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toEndOf="@id/schedule_info_vs_img_view"
+                                    app:layout_constraintTop_toBottomOf="@id/schedule_team2_info_icon_cv" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/schedule_info_location_cv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginTop="24dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/schedule_info_teams_cv"
+                        app:strokeColor="@color/colorAccent"
+                        app:strokeWidth="1dp">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                app:layout_constraintStart_toStartOf="@id/schedule_info_location_txt"
+                                app:layout_constraintTop_toTopOf="@id/schedule_info_location_txt"
+                                app:layout_constraintBottom_toBottomOf="@id/schedule_info_location_txt"
+                                app:layout_constraintEnd_toEndOf="@id/schedule_info_location_txt"
+                                android:background="@color/colorAccent"
+                                android:alpha="0.5" />
+
+                            <TextView
+                                android:id="@+id/schedule_info_location_txt"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Location"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:padding="8dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"/>
+
+                            <TextView
+                                android:id="@+id/schedule_info_location_txt_view"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Cegep Soccer Ground"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:padding="16dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/schedule_info_location_txt"
+                                app:layout_constraintEnd_toEndOf="parent"/>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:alpha="0.5"
+                        android:background="@color/colorAccent"
+                        app:layout_constraintBottom_toBottomOf="@id/schedule_info_player_txt"
+                        app:layout_constraintEnd_toEndOf="@id/schedule_info_player_txt"
+                        app:layout_constraintStart_toStartOf="@id/schedule_info_player_txt"
+                        app:layout_constraintTop_toTopOf="@id/schedule_info_player_txt" />
+
+                    <TextView
+                        android:id="@+id/schedule_info_player_txt"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:text="Players"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/schedule_info_location_cv"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"/>
+
+                    <TextView
+                        android:id="@+id/si_team1_player_text_view"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/schedule_info_player_txt"
+                        app:layout_constraintEnd_toStartOf="@id/schedule_info_vertical_divider"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="18sp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginTop="16dp"
+                        android:text="Player Name"
+                        android:lineSpacingExtra="12dp"/>
+
+                    <View
+                        android:id="@+id/schedule_info_vertical_divider"
+                        android:layout_width="1dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/schedule_info_player_txt"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginTop="16dp"
+                        android:background="@color/colorAccent" />
+
+                    <TextView
+                        android:id="@+id/si_team2_player_text_view"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@id/schedule_info_player_txt"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/schedule_info_vertical_divider"
+                        android:gravity="end"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="18sp"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="16dp"
+                        android:text="Player Name"
+                        android:lineSpacingExtra="12dp"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

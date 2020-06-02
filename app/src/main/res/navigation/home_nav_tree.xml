@@ -78,4 +78,29 @@
         android:name="com.example.cegepsoccerleague.AddScheduleFragment"
         android:label="Add Schedule"
         tools:layout="@layout/fragment_add_schedule" />
+    <fragment
+        android:id="@+id/matchScheduleInfoFragment"
+        android:name="com.example.cegepsoccerleague.MatchScheduleInfoFragment"
+        android:label="Match Schedule"
+        tools:layout="@layout/fragment_match_schedule_info" />
+    <fragment
+        android:id="@+id/scoreboardFragment"
+        android:name="com.example.cegepsoccerleague.ScoreboardFragment"
+        android:label="Scoreboard"
+        tools:layout="@layout/fragment_scoreboard" />
+    <fragment
+        android:id="@+id/addScoreboardFragment"
+        android:name="com.example.cegepsoccerleague.AddScoreboardFragment"
+        android:label="Add Score"
+        tools:layout="@layout/fragment_add_scoreboard" />
+    <fragment
+        android:id="@+id/scoreboardInfoFragment"
+        android:name="com.example.cegepsoccerleague.ScoreboardInfoFragment"
+        android:label="Scoreboard"
+        tools:layout="@layout/fragment_scoreboard_info" />
+    <fragment
+        android:id="@+id/selectMatchFragment"
+        android:name="com.example.cegepsoccerleague.SelectMatchFragment"
+        android:label="Select Match"
+        tools:layout="@layout/fragment_select_match" />
 </navigation>

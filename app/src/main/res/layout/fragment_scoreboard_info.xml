@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ScoreboardInfoFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="4dp"
+            app:strokeColor="@color/colorAccent"
+            app:strokeWidth="2dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="16dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/sb_info_teams_cv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/colorAccent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/sb_info_teams_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="8dp">
+
+                        <View
+                            android:id="@+id/sb_info_dt_bg_view"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:alpha="0.5"
+                            android:background="@color/colorAccent"
+                            app:layout_constraintBottom_toBottomOf="@id/sb_info_date"
+                            app:layout_constraintEnd_toEndOf="@id/sb_info_time"
+                            app:layout_constraintStart_toStartOf="@id/sb_info_date"
+                            app:layout_constraintTop_toTopOf="@id/sb_info_date" />
+
+                        <TextView
+                            android:id="@+id/sb_info_date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="4dp"
+                            android:paddingStart="8dp"
+                            android:text="Date"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/sb_info_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="4dp"
+                            android:paddingEnd="8dp"
+                            android:text="Time"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintEnd_toEndOf="@id/sb_info_dt_bg_view"
+                            app:layout_constraintStart_toStartOf="@id/sb_info_dt_bg_view"
+                            app:layout_constraintTop_toBottomOf="@id/sb_info_dt_bg_view">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/sb_info_team1_icon_cv"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:layout_marginTop="16dp"
+                                app:cardCornerRadius="30dp"
+                                app:layout_constraintBottom_toTopOf="@id/sb_info_team1_name"
+                                app:layout_constraintEnd_toStartOf="@id/sb_info_vs_img_view"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:strokeColor="@color/colorPrimary"
+                                app:strokeWidth="2dp">
+
+                                <ImageView
+                                    android:id="@+id/sb_info_team1_img_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/add_team_icon" />
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <TextView
+                                android:id="@+id/sb_info_team1_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:padding="4dp"
+                                android:text="Team 1 Name"
+                                android:textColor="@color/textBlackGrey"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toStartOf="@id/sb_info_vs_img_view"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/sb_info_team1_icon_cv" />
+
+
+                            <ImageView
+                                android:id="@+id/sb_info_vs_img_view"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:src="@drawable/vs"
+                                app:layout_constraintBottom_toTopOf="@id/sb_info_win_team_name"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/sb_info_team2_icon_cv"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:layout_marginTop="16dp"
+                                app:cardCornerRadius="30dp"
+                                app:layout_constraintBottom_toTopOf="@id/sb_info_team2_name"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@id/sb_info_vs_img_view"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:strokeColor="@color/colorPrimary"
+                                app:strokeWidth="2dp">
+
+                                <ImageView
+                                    android:id="@+id/sb_info_team2_img_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/add_team_icon" />
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <TextView
+                                android:id="@+id/sb_info_team2_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:padding="4dp"
+                                android:text="Team 2 Name"
+                                android:textColor="@color/textBlackGrey"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@id/sb_info_vs_img_view"
+                                app:layout_constraintTop_toBottomOf="@id/sb_info_team2_icon_cv" />
+
+                            <TextView
+                                android:id="@+id/sb_info_win_team_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingTop="8dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/sb_info_team2_name"
+                                android:gravity="center"
+                                android:textStyle="italic|bold"
+                                android:textColor="@color/colorPrimary"
+                                android:text="Team Name Won Match"
+                                android:textSize="20sp"/>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:alpha="0.5"
+                    android:background="@color/colorAccent"
+                    app:layout_constraintBottom_toBottomOf="@id/sb_info_scoreboard_txt"
+                    app:layout_constraintEnd_toEndOf="@id/sb_info_scoreboard_txt"
+                    app:layout_constraintStart_toStartOf="@id/sb_info_scoreboard_txt"
+                    app:layout_constraintTop_toTopOf="@id/sb_info_scoreboard_txt" />
+
+                <TextView
+                    android:id="@+id/sb_info_scoreboard_txt"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:text="Scoreboard"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/sb_info_teams_cv"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"/>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/sb_info_scoreboard_txt"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    app:strokeColor="@color/colorAccent"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:id="@+id/sb_info_layput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="4">
+
+                            <TextView
+                                android:id="@+id/sb_info_team1_goals"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="3"
+                                android:textColor="@color/colorPrimary"
+                                android:padding="16dp"
+                                android:textSize="18sp"
+                                android:gravity="center"
+                                android:textStyle="bold"/>
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="2"
+                                android:text="Goals"
+                                android:textColor="@color/colorPrimary"
+                                android:padding="16dp"
+                                android:textSize="18sp"
+                                android:gravity="center"
+                                android:textStyle="bold"/>
+
+                            <TextView
+                                android:id="@+id/sb_info_team2_goals"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="2"
+                                android:textColor="@color/colorPrimary"
+                                android:padding="16dp"
+                                android:textSize="18sp"
+                                android:gravity="center"
+                                android:textStyle="bold"/>
+
+                        </LinearLayout>
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:background="@color/colorAccent"
+                                android:alpha="0.5"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"/>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:weightSum="4"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent">
+
+                                <TextView
+                                    android:id="@+id/sb_info_team1_fouls"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="1"
+                                    android:textColor="@color/colorPrimary"
+                                    android:padding="16dp"
+                                    android:textSize="18sp"
+                                    android:gravity="center"
+                                    android:textStyle="bold"/>
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="2"
+                                    android:text="Fouls"
+                                    android:textColor="@color/colorPrimary"
+                                    android:padding="16dp"
+                                    android:textSize="18sp"
+                                    android:gravity="center"
+                                    android:textStyle="bold"/>
+
+                                <TextView
+                                    android:id="@+id/sb_info_team2_fouls"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="3"
+                                    android:textColor="@color/colorPrimary"
+                                    android:padding="16dp"
+                                    android:textSize="18sp"
+                                    android:gravity="center"
+                                    android:textStyle="bold"/>
+
+                            </LinearLayout>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="4">
+
+                            <TextView
+                                android:id="@+id/sb_info_team1_corners"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="0"
+                                android:textColor="@color/colorPrimary"
+                                android:padding="16dp"
+                                android:textSize="18sp"
+                                android:gravity="center"
+                                android:textStyle="bold"/>
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="2"
+                                android:text="Corners"
+                                android:textColor="@color/colorPrimary"
+                                android:padding="16dp"
+                                android:textSize="18sp"
+                                android:gravity="center"
+                                android:textStyle="bold"/>
+
+                            <TextView
+                                android:id="@+id/sb_info_team2_corners"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="2"
+                                android:textColor="@color/colorPrimary"
+                                android:padding="16dp"
+                                android:textSize="18sp"
+                                android:gravity="center"
+                                android:textStyle="bold"/>
+
+                        </LinearLayout>
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:background="@color/colorAccent"
+                                android:alpha="0.5"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"/>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:weightSum="4"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent">
+
+                                <TextView
+                                    android:id="@+id/sb_info_team1_kicks"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="1"
+                                    android:textColor="@color/colorPrimary"
+                                    android:padding="16dp"
+                                    android:textSize="18sp"
+                                    android:gravity="center"
+                                    android:textStyle="bold"/>
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="2"
+                                    android:text="Free Kicks"
+                                    android:textColor="@color/colorPrimary"
+                                    android:padding="16dp"
+                                    android:textSize="18sp"
+                                    android:gravity="center"
+                                    android:textStyle="bold"/>
+
+                                <TextView
+                                    android:id="@+id/sb_info_team2_kicks"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="0"
+                                    android:textColor="@color/colorPrimary"
+                                    android:padding="16dp"
+                                    android:textSize="18sp"
+                                    android:gravity="center"
+                                    android:textStyle="bold"/>
+
+                            </LinearLayout>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="4">
+
+                            <TextView
+                                android:id="@+id/sb_info_team1_goal_saved"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="2"
+                                android:textColor="@color/colorPrimary"
+                                android:padding="16dp"
+                                android:textSize="18sp"
+                                android:gravity="center"
+                                android:textStyle="bold"/>
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="2"
+                                android:text="Goal Saved"
+                                android:textColor="@color/colorPrimary"
+                                android:padding="16dp"
+                                android:textSize="18sp"
+                                android:gravity="center"
+                                android:textStyle="bold"/>
+
+                            <TextView
+                                android:id="@+id/sb_info_team2_goal_saved"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="1"
+                                android:textColor="@color/colorPrimary"
+                                android:padding="16dp"
+                                android:textSize="18sp"
+                                android:gravity="center"
+                                android:textStyle="bold"/>
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

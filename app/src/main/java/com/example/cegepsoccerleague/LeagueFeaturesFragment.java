@@ -87,7 +87,11 @@ public class LeagueFeaturesFragment extends Fragment implements View.OnClickList
             HomeNavController.navigate(R.id.listOfSchedulesFragment,dataBundle);
         }
         else if(view==lgm_ft_scoreboard_cv){
-
+            Bundle dataBundle = new Bundle();
+            dataBundle.putString("league_id",league_id);
+            dataBundle.putString("league_name",league_name);
+            dataBundle.putString("from","league Features");
+            HomeNavController.navigate(R.id.scoreboardFragment,dataBundle);
         }
     }
 }
