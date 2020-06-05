@@ -14,6 +14,14 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -24,24 +32,26 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -147,6 +157,14 @@ public class AddTeamFragment extends Fragment implements View.OnClickListener{
                 tm_confirm_password.setError("Confirm password doesn't match with password!");
             }
             else {
+                add_team_btn.setEnabled(false);
+                if(image_uri!=null){
+                    new EncodeImage(image_uri).execute();
+                }
+                else {
+                    String encoded_league_icon = "No Icon";
+                    AddTeam(encoded_league_icon);
+                }
             }
         }
     }
@@ -309,6 +327,111 @@ public class AddTeamFragment extends Fragment implements View.OnClickListener{
             }
         }
 
+    }
+
+    // Adding Team in database
+    private void AddTeam(final String encoded_league_icon) {
+
+        final String team_name = team_name_layout.getEditText().getText().toString().trim();
+        final String first_name = tm_firstname.getEditText().getText().toString().trim();
+        final String last_name = tm_lastname.getEditText().getText().toString().trim();
+        final String email = tm_email.getEditText().getText().toString().trim();
+        final String team_contact_number = tm_contact_num.getEditText().getText().toString().trim();
+        String password = tm_password.getEditText().getText().toString().trim();
+
+        final FirebaseAuth mAuth2 = FirebaseAuth.getInstance();
+        //Creating Team manager in Firebase Authentication
+        mAuth2.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+
+                            // Sign Up success, Create User in Cloud Firestore
+                            final FirebaseUser user = mAuth2.getCurrentUser();
+                            // Create a new user with a first and last name and user_type
+                            final Map<String, Object> usermap = new HashMap<>();
+                            usermap.put("first_name", first_name);
+                            usermap.put("last_name", last_name);
+                            usermap.put("email",email);
+                            usermap.put("user_type", "TM");
+
+                            // Add a new document in database with team manager's generated ID in authentication
+                            db.collection("users")
+                                    .document(user.getUid())
+                                    .set(usermap)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+
+                                            //Add New Team in Database
+                                            // Create a new team data object
+                                            Map<String, Object> team_data = new HashMap<>();
+                                            team_data.put("team_name", team_name);
+                                            team_data.put("team_icon", encoded_league_icon);
+                                            team_data.put("team_manager_id", user.getUid());
+                                            team_data.put("team_manager_contact",team_contact_number);
+                                            team_data.put("league_id",league_id);
+
+                                            // Add a new document with auto generated ID
+                                            db.collection("teams")
+                                                    .add(team_data)
+                                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                        @Override
+                                                        public void onSuccess(DocumentReference documentReference) {
+                                                            mAuth2.signOut();
+                                                            mAuth.signInWithEmailAndPassword(PreferenceData.getUseremail(context), PreferenceData.getUserpassword(context))
+                                                                    .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                                                                        @Override
+                                                                        public void onComplete(@NonNull Task<AuthResult> task) {
+                                                                            if (task.isSuccessful()) {
+                                                                                // Sign in success, update UI with the signed-in user's information
+                                                                                add_team_btn.setEnabled(true);
+                                                                                Toast.makeText(context, "Team Added Successfully!", Toast.LENGTH_LONG).show();
+                                                                                HomeNavController.popBackStack();
+                                                                            } else {
+                                                                                // If sign in fails, display a message to the user.
+                                                                                Toast.makeText(context,"Something went wrong! Please Try Again", Toast.LENGTH_SHORT).show();
+                                                                            }
+                                                                        }
+                                                                    });
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            add_team_btn.setEnabled(true);
+                                                            Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                                                        }
+                                                    });
+
+
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+
+                                    user.delete()
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+                                                    }
+                                                }
+                                            });
+                                    Toast.makeText(context,"Team Manager Datastore: " + e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+                                    add_team_btn.setEnabled(true);
+                                }
+                            });
+
+
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Toast.makeText(context,"Team Manager Authetication: " + task.getException().getLocalizedMessage(),Toast.LENGTH_LONG).show();
+                            add_team_btn.setEnabled(true);
+                        }
+                    }
+                });
     }
 
 }

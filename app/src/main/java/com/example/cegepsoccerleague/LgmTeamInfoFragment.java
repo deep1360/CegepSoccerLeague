@@ -1,13 +1,9 @@
 package com.example.cegepsoccerleague;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,11 +13,21 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.util.Base64;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.json.JSONObject;
 
 
 /**
@@ -38,6 +44,7 @@ public class LgmTeamInfoFragment extends Fragment implements View.OnClickListene
     private LinearLayout lgm_team_players_layout;
     private ImageView lgm_team_info_img_view;
     private TextView lgm_team_info_name, lgm_team_manager_name, lgm_team_manager_contact, lgm_team_manager_email;
+    String team_id = "",team_manager_id="";
 
 
     public LgmTeamInfoFragment() {
@@ -74,6 +81,20 @@ public class LgmTeamInfoFragment extends Fragment implements View.OnClickListene
         user = mAuth.getCurrentUser();
         // Access a Cloud Firestore instance from your Fragment
         db = FirebaseFirestore.getInstance();
+
+        if(getArguments()!=null){
+            team_id = getArguments().getString("team_id");
+            team_manager_id = getArguments().getString("team_manager_id");
+            lgm_team_info_name.setText(getArguments().getString("team_name"));
+            lgm_team_manager_name.setText(getArguments().getString("team_manager_name"));
+            lgm_team_manager_contact.setText(getArguments().getString("team_manager_contact"));
+            lgm_team_manager_email.setText(getArguments().getString("team_manager_email"));
+            if(!getArguments().getString("team_icon").equals("No Icon")){
+                byte[] decodedString = Base64.decode(getArguments().getString("team_icon"), Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                lgm_team_info_img_view.setImageBitmap(decodedByte);
+            }
+        }
 
         CreatePlayersListView();
 
