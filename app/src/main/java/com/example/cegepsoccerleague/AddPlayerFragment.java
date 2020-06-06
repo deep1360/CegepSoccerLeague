@@ -8,12 +8,22 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -24,24 +34,25 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -60,6 +71,9 @@ public class AddPlayerFragment extends Fragment implements View.OnClickListener{
     private TextInputLayout player_first_name_layout, player_last_name_layout, player_age_layout, player_position_layout;
     private MaterialButton add_player_btn;
     public Uri image_uri;
+    private String team_id = "",player_id="";
+    public Toolbar HomeToolbar;
+    private Boolean update_has_image = false;
 
 
     public AddPlayerFragment() {
@@ -80,6 +94,7 @@ public class AddPlayerFragment extends Fragment implements View.OnClickListener{
 
         context = getActivity().getApplicationContext();
         HomeNavController = Navigation.findNavController(getActivity(), R.id.home_host_fragment);
+        HomeToolbar = getActivity().findViewById(R.id.home_toolbar);
 
         add_player_icon_img_view = view.findViewById(R.id.add_player_icon_img_view);
         add_player_icon_txt = view.findViewById(R.id.add_player_icon_txt);
@@ -100,6 +115,29 @@ public class AddPlayerFragment extends Fragment implements View.OnClickListener{
         db = FirebaseFirestore.getInstance();
         //Get Current User refernece
         user = mAuth.getCurrentUser();
+
+        if(getArguments() != null){
+            if(getArguments().getString("from")!=null && getArguments().getString("from").equals("update player")){
+                HomeToolbar.setTitle("Update Player");
+                add_player_btn.setText("Update Player Info");
+                player_id = getArguments().getString("player_id");
+                team_id = getArguments().getString("team_id");
+                player_first_name_layout.getEditText().setText(getArguments().getString("first_name"));
+                player_last_name_layout.getEditText().setText(getArguments().getString("last_name"));
+                player_age_layout.getEditText().setText(getArguments().getString("age"));
+                player_position_layout.getEditText().setText(getArguments().getString("position"));
+                if(!getArguments().getString("player_icon").equals("No Icon")){
+                    update_has_image = true;
+                    byte[] decodedString = Base64.decode(getArguments().getString("player_icon"), Base64.DEFAULT);
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                    add_player_icon_img_view.setImageBitmap(decodedByte);
+                }
+
+            }
+            else {
+                team_id = getArguments().getString("team_id");
+            }
+        }
 
     }
 
@@ -135,13 +173,18 @@ public class AddPlayerFragment extends Fragment implements View.OnClickListener{
             }
             else {
 
-                /*add_player_btn.setEnabled(false);
+                add_player_btn.setEnabled(false);
                 if(image_uri!=null){
                     new EncodeImage(image_uri).execute();
                 }
+                else if(update_has_image){
+                    String encoded_league_icon = getArguments().getString("player_icon");
+                    AddPlayer(encoded_league_icon);
+                }
                 else {
                     String encoded_league_icon = "No Icon";
-                }*/
+                    AddPlayer(encoded_league_icon);
+                }
             }
         }
     }
@@ -296,8 +339,69 @@ public class AddPlayerFragment extends Fragment implements View.OnClickListener{
             super.onPostExecute(result);
             if(!result.equals("")) {
                 String encoded_league_icon = result;
+                AddPlayer(encoded_league_icon);
 
             }
+        }
+
+    }
+
+    // Adding Team in database
+    private void AddPlayer(final String encoded_league_icon) {
+
+        final String first_name = player_first_name_layout.getEditText().getText().toString().trim();
+        final String last_name = player_last_name_layout.getEditText().getText().toString().trim();
+        final String age = player_age_layout.getEditText().getText().toString().trim();
+        final String position = player_position_layout.getEditText().getText().toString().trim();
+
+        //Creating a data object to add in database
+        final Map<String, Object> player_data = new HashMap<>();
+        player_data.put("first_name", first_name);
+        player_data.put("last_name", last_name);
+        player_data.put("age",age);
+        player_data.put("position", position);
+        player_data.put("team_id",team_id);
+        player_data.put("player_icon",encoded_league_icon);
+
+        if(getArguments().getString("from")!=null && getArguments().getString("from").equals("update player")) {
+            db.collection("players").document(player_id)
+                    .set(player_data)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            add_player_btn.setEnabled(true);
+                            Toast.makeText(context, "Player Updated Successfully!", Toast.LENGTH_LONG).show();
+                            HomeNavController.popBackStack();
+                            HomeNavController.popBackStack();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            add_player_btn.setEnabled(true);
+                            Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+        }
+        else {
+            // Add a new document with auto generated ID
+            db.collection("players")
+                    .add(player_data)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            add_player_btn.setEnabled(true);
+                            Toast.makeText(context, "Player Added Successfully!", Toast.LENGTH_LONG).show();
+                            HomeNavController.popBackStack();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            add_player_btn.setEnabled(true);
+                            Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
         }
 
     }

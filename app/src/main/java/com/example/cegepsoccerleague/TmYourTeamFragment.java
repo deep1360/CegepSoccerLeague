@@ -1,12 +1,9 @@
 package com.example.cegepsoccerleague;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,10 +11,22 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.util.Base64;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 
 /**
@@ -33,7 +42,7 @@ public class TmYourTeamFragment extends Fragment implements View.OnClickListener
     private ImageView team_info_img_view;
     private TextView team_info_email, team_info_contact_num, team_info_name;
     private MaterialButton tm_info_update_btn, tm_info_view_player_btn;
-
+    String team_id = "";
 
     public TmYourTeamFragment() {
         // Required empty public constructor
@@ -71,7 +80,14 @@ public class TmYourTeamFragment extends Fragment implements View.OnClickListener
         //Get Current User refernece
         user = mAuth.getCurrentUser();
 
+        getTeamDetails();
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //getTeamDetails();
     }
 
     @Override
@@ -81,8 +97,36 @@ public class TmYourTeamFragment extends Fragment implements View.OnClickListener
             HomeNavController.navigate(R.id.updateTeamInfoFragment);
         }
         else if(view == tm_info_view_player_btn){
-            HomeNavController.navigate(R.id.listOfPlayersFragment);
+            Bundle dataBundle = new Bundle();
+            dataBundle.putString("team_id",team_id);
+            dataBundle.putString("from","TM Your Team");
+            HomeNavController.navigate(R.id.listOfPlayersFragment,dataBundle);
         }
 
+    }
+
+    private void getTeamDetails(){
+        db.collection("teams").whereEqualTo("team_manager_id",user.getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                team_id = document.getId();
+                                team_info_name.setText(document.getData().get("team_name").toString());
+                                team_info_contact_num.setText(document.getData().get("team_manager_contact").toString());
+                                team_info_email.setText(user.getEmail());
+                                if(!document.getData().get("team_icon").toString().equals("No Icon")){
+                                    byte[] decodedString = Base64.decode(document.getData().get("team_icon").toString(), Base64.DEFAULT);
+                                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                                    team_info_img_view.setImageBitmap(decodedByte);
+                                }
+                            }
+                        } else {
+                            Toast.makeText(context,task.getException().getLocalizedMessage(),Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
     }
 }

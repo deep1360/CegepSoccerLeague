@@ -1,12 +1,9 @@
 package com.example.cegepsoccerleague;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +12,16 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.util.Base64;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,6 +41,7 @@ public class PlayerInfoFragment extends Fragment implements View.OnClickListener
     private ImageView player_info_img_view;
     private TextView player_info_age, player_info_position, player_info_name;
     private MaterialButton edit_player_info_btn, delete_player_btn;
+    private String player_id="";
 
 
     public PlayerInfoFragment() {
@@ -72,12 +80,33 @@ public class PlayerInfoFragment extends Fragment implements View.OnClickListener
         //Get Current User refernece
         user = mAuth.getCurrentUser();
 
+        if(getArguments()!=null){
+            player_id = getArguments().getString("player_id");
+            player_info_name.setText(getArguments().getString("first_name")+" "+getArguments().getString("last_name"));
+            player_info_age.setText("Age : "+getArguments().getString("age"));
+            player_info_position.setText("Position : "+getArguments().getString("position"));
+            if(!getArguments().getString("player_icon").equals("No Icon")){
+                byte[] decodedString = Base64.decode(getArguments().getString("player_icon"), Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                player_info_img_view.setImageBitmap(decodedByte);
+            }
+        }
+
     }
 
     @Override
     public void onClick(View view) {
         if(view==edit_player_info_btn){
-
+            Bundle dataBundle = new Bundle();
+            dataBundle.putString("from","update player");
+            dataBundle.putString("player_id",getArguments().getString("player_id"));
+            dataBundle.putString("first_name",getArguments().getString("first_name"));
+            dataBundle.putString("last_name",getArguments().getString("last_name"));
+            dataBundle.putString("age",getArguments().getString("age"));
+            dataBundle.putString("position",getArguments().getString("position"));
+            dataBundle.putString("player_icon",getArguments().getString("player_icon"));
+            dataBundle.putString("team_id",getArguments().getString("team_id"));
+            HomeNavController.navigate(R.id.addPlayerFragment,dataBundle);
         }
         else if(view == delete_player_btn){
             DeletePlayer();
@@ -103,8 +132,23 @@ public class PlayerInfoFragment extends Fragment implements View.OnClickListener
         delelte_continue_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Delete_Player_Dialog.dismiss();
-                HomeNavController.popBackStack();
+                db.collection("players").document(player_id)
+                        .delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(context,"Player removed from team successfully!",Toast.LENGTH_LONG).show();
+                                Delete_Player_Dialog.dismiss();
+                                HomeNavController.popBackStack();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(context,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+                                Delete_Player_Dialog.dismiss();
+                            }
+                        });
             }
         });
     }
