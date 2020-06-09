@@ -166,6 +166,7 @@ public class ListOfTeamsFragment extends Fragment implements View.OnClickListene
                                     object.get("first_name")+" "+object.get("last_name"),
                                     document.get("team_manager_contact").toString(),
                                     object.get("email").toString(),
+                                    object.get("password").toString(),
                                     document.get("league_id").toString()));
 
                         } catch (JSONException e) {
@@ -194,6 +195,7 @@ public class ListOfTeamsFragment extends Fragment implements View.OnClickListene
                                     dataBundle.putString("team_manager_name",TeamsArrayList.get(position).getTeam_manager_name());
                                     dataBundle.putString("team_manager_contact",TeamsArrayList.get(position).getTeam_manager_contact());
                                     dataBundle.putString("team_manager_email",TeamsArrayList.get(position).getTeam_manager_email());
+                                    dataBundle.putString("team_manager_password",TeamsArrayList.get(position).getTeam_manager_password());
                                     HomeNavController.navigate(R.id.lgmTeamInfoFragment,dataBundle);
                                 }
                             }

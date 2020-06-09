@@ -337,7 +337,7 @@ public class AddTeamFragment extends Fragment implements View.OnClickListener{
         final String last_name = tm_lastname.getEditText().getText().toString().trim();
         final String email = tm_email.getEditText().getText().toString().trim();
         final String team_contact_number = tm_contact_num.getEditText().getText().toString().trim();
-        String password = tm_password.getEditText().getText().toString().trim();
+        final String password = tm_password.getEditText().getText().toString().trim();
 
         final FirebaseAuth mAuth2 = FirebaseAuth.getInstance();
         //Creating Team manager in Firebase Authentication
@@ -354,6 +354,7 @@ public class AddTeamFragment extends Fragment implements View.OnClickListener{
                             usermap.put("first_name", first_name);
                             usermap.put("last_name", last_name);
                             usermap.put("email",email);
+                            usermap.put("password",password);
                             usermap.put("user_type", "TM");
 
                             // Add a new document in database with team manager's generated ID in authentication

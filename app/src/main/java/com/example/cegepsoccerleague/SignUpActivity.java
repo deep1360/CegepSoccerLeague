@@ -100,7 +100,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
-    private void sign_up_User(final String first_name, final String last_name, final String email, String password) {
+    private void sign_up_User(final String first_name, final String last_name, final String email, final String password) {
         signup_btn.setEnabled(false);
 
         //Creating User in Firebase Authentication
@@ -109,6 +109,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+
                             // Sign Up success, Create User in Cloud Firestore
                             user = mAuth.getCurrentUser();
                             // Create a new user with a first and last name and user_type
@@ -116,6 +117,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                             usermap.put("first_name", first_name);
                             usermap.put("last_name", last_name);
                             usermap.put("email",email);
+                            usermap.put("password",password);
                             usermap.put("user_type", "LM");
 
                             // Add a new document with user's generated ID in authentication
@@ -123,15 +125,15 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                                     .document(user.getUid())
                                     .set(usermap)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Toast.makeText(SignUpActivity.this,"Signed Up successfully!",Toast.LENGTH_LONG).show();
-                                    signup_btn.setEnabled(true);
-                                    mAuth.signOut();
-                                    finish();
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Toast.makeText(SignUpActivity.this,"Signed Up successfully!",Toast.LENGTH_LONG).show();
+                                            signup_btn.setEnabled(true);
+                                            mAuth.signOut();
+                                            finish();
 
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
 
@@ -147,8 +149,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                                     signup_btn.setEnabled(true);
                                 }
                             });
-
-
 
 
                         } else {

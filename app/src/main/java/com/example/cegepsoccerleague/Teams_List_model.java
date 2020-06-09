@@ -1,9 +1,9 @@
 package com.example.cegepsoccerleague;
 
 public class Teams_List_model {
-    String team_id, team_name, team_icon, team_manager_id,team_manager_name, team_manager_contact, team_manager_email, league_id;
+    String team_id, team_name, team_icon, team_manager_id,team_manager_name, team_manager_contact, team_manager_email, team_manager_password, league_id;
 
-    public Teams_List_model(String team_id, String team_name, String team_icon, String team_manager_id, String team_manager_name, String team_manager_contact,String team_manager_email, String league_id) {
+    public Teams_List_model(String team_id, String team_name, String team_icon, String team_manager_id, String team_manager_name, String team_manager_contact,String team_manager_email, String team_manager_password, String league_id) {
         this.team_id = team_id;
         this.team_name = team_name;
         this.team_icon = team_icon;
@@ -11,6 +11,7 @@ public class Teams_List_model {
         this.team_manager_name = team_manager_name;
         this.team_manager_contact = team_manager_contact;
         this.team_manager_email = team_manager_email;
+        this.team_manager_password = team_manager_password;
         this.league_id = league_id;
     }
 
@@ -40,6 +41,10 @@ public class Teams_List_model {
 
     public String getTeam_manager_email() {
         return team_manager_email;
+    }
+
+    public String getTeam_manager_password() {
+        return team_manager_password;
     }
 
     public String getLeague_id() {
