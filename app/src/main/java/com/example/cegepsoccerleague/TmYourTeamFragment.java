@@ -42,7 +42,7 @@ public class TmYourTeamFragment extends Fragment implements View.OnClickListener
     private ImageView team_info_img_view;
     private TextView team_info_email, team_info_contact_num, team_info_name;
     private MaterialButton tm_info_update_btn, tm_info_view_player_btn;
-    String team_id = "";
+    String team_id = "",team_icon="",league_id="";
 
     public TmYourTeamFragment() {
         // Required empty public constructor
@@ -80,21 +80,26 @@ public class TmYourTeamFragment extends Fragment implements View.OnClickListener
         //Get Current User refernece
         user = mAuth.getCurrentUser();
 
-        getTeamDetails();
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        //getTeamDetails();
+        getTeamDetails();
     }
 
     @Override
     public void onClick(View view) {
 
         if(view==tm_info_update_btn){
-            HomeNavController.navigate(R.id.updateTeamInfoFragment);
+            Bundle dataBundle = new Bundle();
+            dataBundle.putString("team_id",team_id);
+            dataBundle.putString("team_name",team_info_name.getText().toString());
+            dataBundle.putString("team_manager_contact",team_info_contact_num.getText().toString());
+            dataBundle.putString("team_manager_id",user.getUid());
+            dataBundle.putString("team_icon",team_icon);
+            dataBundle.putString("league_id",league_id);
+            HomeNavController.navigate(R.id.updateTeamInfoFragment,dataBundle);
         }
         else if(view == tm_info_view_player_btn){
             Bundle dataBundle = new Bundle();
@@ -117,6 +122,8 @@ public class TmYourTeamFragment extends Fragment implements View.OnClickListener
                                 team_info_name.setText(document.getData().get("team_name").toString());
                                 team_info_contact_num.setText(document.getData().get("team_manager_contact").toString());
                                 team_info_email.setText(user.getEmail());
+                                team_icon = document.getData().get("team_icon").toString();
+                                league_id = document.getData().get("league_id").toString();
                                 if(!document.getData().get("team_icon").toString().equals("No Icon")){
                                     byte[] decodedString = Base64.decode(document.getData().get("team_icon").toString(), Base64.DEFAULT);
                                     Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);

@@ -8,12 +8,21 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -24,24 +33,25 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -60,6 +70,8 @@ public class UpdateTeamInfoFragment extends Fragment implements View.OnClickList
     private TextInputLayout update_team_name_layout, update_team_contact_layout;
     private MaterialButton update_team_info_btn;
     public Uri image_uri;
+    String team_id = "",team_icon="",league_id="";
+    boolean team_has_icon =false;
 
     public UpdateTeamInfoFragment() {
         // Required empty public constructor
@@ -97,6 +109,21 @@ public class UpdateTeamInfoFragment extends Fragment implements View.OnClickList
         db = FirebaseFirestore.getInstance();
         //Get Current User refernece
         user = mAuth.getCurrentUser();
+
+        if(getArguments()!=null){
+            team_id = getArguments().getString("team_id");
+            team_icon = getArguments().getString("team_icon");
+            league_id = getArguments().getString("league_id");
+            update_team_name_layout.getEditText().setText(getArguments().getString("team_name"));
+            update_team_contact_layout.getEditText().setText(getArguments().getString("team_manager_contact"));
+
+            if(!team_icon.equals("No Icon")){
+                team_has_icon = true;
+                byte[] decodedString = Base64.decode(team_icon, Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                update_team_icon_img_view.setImageBitmap(decodedByte);
+            }
+        }
     }
 
     @Override
@@ -121,13 +148,17 @@ public class UpdateTeamInfoFragment extends Fragment implements View.OnClickList
             }
             else {
 
-                /*update_team_info_btn.setEnabled(false);
+                update_team_info_btn.setEnabled(false);
                 if(image_uri!=null){
                     new EncodeImage(image_uri).execute();
                 }
+                else if(team_has_icon){
+                    updateTeamInfo(team_icon);
+                }
                 else {
-                    String encoded_league_icon = "No Icon";
-                }*/
+                    String encoded_team_icon = "No Icon";
+                    updateTeamInfo(encoded_team_icon);
+                }
             }
         }
     }
@@ -281,10 +312,41 @@ public class UpdateTeamInfoFragment extends Fragment implements View.OnClickList
         protected void onPostExecute(String result){
             super.onPostExecute(result);
             if(!result.equals("")) {
-                String encoded_league_icon = result;
-
+                String encoded_team_icon = result;
+                updateTeamInfo(encoded_team_icon);
             }
         }
 
+    }
+
+    private void updateTeamInfo(String encoded_team_icon){
+
+        String team_name = update_team_name_layout.getEditText().getText().toString().trim();
+        String team_contact_number = update_team_contact_layout.getEditText().getText().toString().trim();
+        Map<String, Object> team_data = new HashMap<>();
+        team_data.put("team_name", team_name);
+        team_data.put("team_icon", encoded_team_icon);
+        team_data.put("team_manager_id", user.getUid());
+        team_data.put("team_manager_contact",team_contact_number);
+        team_data.put("league_id",league_id);
+
+        // Add a new document with auto generated ID
+        db.collection("teams").document(team_id)
+                .set(team_data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        update_team_info_btn.setEnabled(true);
+                        Toast.makeText(context, "Team Updated Successfully!", Toast.LENGTH_LONG).show();
+                        HomeNavController.popBackStack();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        update_team_info_btn.setEnabled(true);
+                        Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 }
