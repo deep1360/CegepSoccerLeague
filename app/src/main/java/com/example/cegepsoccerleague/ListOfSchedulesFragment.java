@@ -211,14 +211,25 @@ public class ListOfSchedulesFragment extends Fragment implements View.OnClickLis
                         public void onClick(View view) {
                             RecyclerView.ViewHolder viewHolder = (RecyclerView.ViewHolder) view.getTag();
                             int position = viewHolder.getAdapterPosition();
+                            Bundle dataBundle = new Bundle();
+                            dataBundle.putString("match_id",schedulesArrayList.get(position).getMatch_id());
+                            dataBundle.putString("match_date",schedulesArrayList.get(position).getMatch_date());
+                            dataBundle.putString("match_time",schedulesArrayList.get(position).getMatch_time());
+                            dataBundle.putString("match_location",schedulesArrayList.get(position).getMatch_location());
+                            dataBundle.putString("team1_id",schedulesArrayList.get(position).getTeam1_id());
+                            dataBundle.putString("team1_name",schedulesArrayList.get(position).getTeam1_name());
+                            dataBundle.putString("team1_icon",schedulesArrayList.get(position).getTeam1_icon());
+                            dataBundle.putString("team2_id",schedulesArrayList.get(position).getTeam2_id());
+                            dataBundle.putString("team2_name",schedulesArrayList.get(position).getTeam2_name());
+                            dataBundle.putString("team2_icon",schedulesArrayList.get(position).getTeam2_icon());
+                            dataBundle.putString("league_id",schedulesArrayList.get(position).getLeague_id());
                             if (getArguments() != null) {
                                 if (getArguments().getString("from") != null && getArguments().getString("from").equals("league Features")) {
-                                    Bundle dataBundle = new Bundle();
                                     dataBundle.putString("from", "league Features");
                                     HomeNavController.navigate(R.id.matchScheduleInfoFragment, dataBundle);
                                 }
                             } else {
-                                HomeNavController.navigate(R.id.matchScheduleInfoFragment);
+                                HomeNavController.navigate(R.id.matchScheduleInfoFragment,dataBundle);
                             }
                         }
                     });
