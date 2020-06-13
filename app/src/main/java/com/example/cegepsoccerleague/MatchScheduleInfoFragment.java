@@ -34,6 +34,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.Calendar;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -162,7 +164,34 @@ public class MatchScheduleInfoFragment extends Fragment{
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         if (item.getItemId()==R.id.edit_option){
-            HomeNavController.navigate(R.id.addScheduleFragment);
+            Bundle dataBundle = getArguments();
+            Calendar c = Calendar.getInstance();
+            int yy = c.get(Calendar.YEAR);
+            int mm = c.get(Calendar.MONTH) + 1;
+            int dd = c.get(Calendar.DAY_OF_MONTH);
+            String[] date = dataBundle.get("match_date").toString().split("-");
+            if (Integer.parseInt(date[0]) > yy) {
+                HomeNavController.navigate(R.id.updateScheduleFragment,dataBundle);
+            }
+            else if(Integer.parseInt(date[0]) == yy){
+                if (Integer.parseInt(date[1]) > mm) {
+                    HomeNavController.navigate(R.id.updateScheduleFragment,dataBundle);
+                }
+                else if(Integer.parseInt(date[1]) == mm){
+                    if (Integer.parseInt(date[2]) >= dd) {
+                        HomeNavController.navigate(R.id.updateScheduleFragment,dataBundle);
+                    }
+                    else {
+                        Toast.makeText(context,"Match date is passed so It can not be updated!",Toast.LENGTH_LONG).show();
+                    }
+                }
+                else {
+                    Toast.makeText(context,"Match date is passed so It can not be updated!",Toast.LENGTH_LONG).show();
+                }
+            }
+            else {
+                Toast.makeText(context,"Match date is passed so It can not be updated!",Toast.LENGTH_LONG).show();
+            }
         }
         else if(item.getItemId()==R.id.delete_option){
             DeleteSchedule();
