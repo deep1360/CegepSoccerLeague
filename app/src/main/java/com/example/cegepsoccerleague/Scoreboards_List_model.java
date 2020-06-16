@@ -1,15 +1,19 @@
 package com.example.cegepsoccerleague;
 
 public class Scoreboards_List_model {
-    String match_id,match_date,
+    String score_id, match_id,match_date, match_location, match_time, league_id,
             team1_id,team1_icon,team1_name,
             team2_id,team2_icon,team2_name,
             team1_goals, team1_fouls, team1_freeKicks, team1_corners, team1_goalSaved,
             team2_goals, team2_fouls, team2_freeKicks, team2_corners, team2_goalSaved;
 
-    public Scoreboards_List_model(String match_id, String match_date, String team1_id, String team1_icon, String team1_name, String team2_id, String team2_icon, String team2_name, String team1_goals, String team1_fouls, String team1_freeKicks, String team1_corners, String team1_goalSaved, String team2_goals, String team2_fouls, String team2_freeKicks, String team2_corners, String team2_goalSaved) {
+    public Scoreboards_List_model(String score_id, String match_id, String match_date, String match_location, String match_time,String league_id, String team1_id, String team1_icon, String team1_name, String team2_id, String team2_icon, String team2_name, String team1_goals, String team1_fouls, String team1_freeKicks, String team1_corners, String team1_goalSaved, String team2_goals, String team2_fouls, String team2_freeKicks, String team2_corners, String team2_goalSaved) {
+        this.score_id = score_id;
         this.match_id = match_id;
         this.match_date = match_date;
+        this.match_location = match_location;
+        this.match_time = match_time;
+        this.league_id = league_id;
         this.team1_id = team1_id;
         this.team1_icon = team1_icon;
         this.team1_name = team1_name;
@@ -28,12 +32,28 @@ public class Scoreboards_List_model {
         this.team2_goalSaved = team2_goalSaved;
     }
 
+    public String getScore_id() {
+        return score_id;
+    }
+
     public String getMatch_id() {
         return match_id;
     }
 
     public String getMatch_date() {
         return match_date;
+    }
+
+    public String getMatch_location() {
+        return match_location;
+    }
+
+    public String getMatch_time() {
+        return match_time;
+    }
+
+    public String getLeague_id() {
+        return league_id;
     }
 
     public String getTeam1_id() {

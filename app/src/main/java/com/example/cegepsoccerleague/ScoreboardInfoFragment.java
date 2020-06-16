@@ -1,7 +1,18 @@
 package com.example.cegepsoccerleague;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,14 +22,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -42,6 +47,7 @@ public class ScoreboardInfoFragment extends Fragment {
             sb_info_team1_kicks, sb_info_team2_kicks,
             sb_info_team1_goal_saved, sb_info_team2_goal_saved;
 
+    private Bundle dataBundle;
 
     public ScoreboardInfoFragment() {
         // Required empty public constructor
@@ -79,13 +85,57 @@ public class ScoreboardInfoFragment extends Fragment {
         sb_info_team2_kicks = view.findViewById(R.id.sb_info_team2_kicks);
         sb_info_team1_goal_saved = view.findViewById(R.id.sb_info_team1_goal_saved);
         sb_info_team2_goal_saved = view.findViewById(R.id.sb_info_team2_goal_saved);
-        
+
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
         // Access a Cloud Firestore instance from your Activity
         db = FirebaseFirestore.getInstance();
         //Get Current User refernece
         user = mAuth.getCurrentUser();
+
+        if(getArguments()!=null){
+            dataBundle = getArguments();
+            sb_info_date.setText(dataBundle.getString("match_date"));
+            sb_info_time.setText(dataBundle.getString("match_time"));
+            sb_info_team1_name.setText(dataBundle.getString("team1_name"));
+            sb_info_team2_name.setText(dataBundle.getString("team2_name"));
+            /*----------- Decoding Base64 Image String and Displaying it On Image View-----------*/
+            if(!getArguments().getString("team1_icon").equals("No Icon")){
+                byte[] decodedString = Base64.decode(getArguments().getString("team1_icon"), Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                sb_info_team1_img_view.setImageBitmap(decodedByte);
+            }
+
+            if(!getArguments().getString("team2_icon").equals("No Icon")){
+                byte[] decodedString = Base64.decode(getArguments().getString("team2_icon"), Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                sb_info_team2_img_view.setImageBitmap(decodedByte);
+            }
+
+            sb_info_team1_goals.setText(dataBundle.getString("team1_goals"));
+            sb_info_team1_fouls.setText(dataBundle.getString("team1_fouls"));
+            sb_info_team1_kicks.setText(dataBundle.getString("team1_freeKicks"));
+            sb_info_team1_corners.setText(dataBundle.getString("team1_corners"));
+            sb_info_team1_goal_saved.setText(dataBundle.getString("team1_goalSaved"));
+
+            sb_info_team2_goals.setText(dataBundle.getString("team2_goals"));
+            sb_info_team2_fouls.setText(dataBundle.getString("team2_fouls"));
+            sb_info_team2_kicks.setText(dataBundle.getString("team2_freeKicks"));
+            sb_info_team2_corners.setText(dataBundle.getString("team2_corners"));
+            sb_info_team2_goal_saved.setText(dataBundle.getString("team2_goalSaved"));
+
+            /*---------- Checking for who won the match and displaying its name ----------*/
+            if(Integer.parseInt(dataBundle.getString("team1_goals"))>Integer.parseInt(dataBundle.getString("team2_goals"))){
+                sb_info_win_team_name.setText(dataBundle.getString("team1_name")+ " won the match!");
+            }
+            else if(Integer.parseInt(dataBundle.getString("team1_goals"))<Integer.parseInt(dataBundle.getString("team2_goals"))){
+                sb_info_win_team_name.setText(dataBundle.getString("team2_name")+ " won the match!");
+            }
+            else {
+                sb_info_win_team_name.setText("MATCH TIED!!!");
+            }
+
+        }
     }
 
     @Override
@@ -107,10 +157,10 @@ public class ScoreboardInfoFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
-        if (item.getItemId()== R.id.edit_option){
-            HomeNavController.navigate(R.id.addScoreboardFragment);
+        if (item.getItemId()==R.id.edit_option){
+            HomeNavController.navigate(R.id.addScoreboardFragment,dataBundle);
         }
-        else if(item.getItemId()== R.id.delete_option){
+        else if(item.getItemId()==R.id.delete_option){
             DeleteScore();
         }
 
