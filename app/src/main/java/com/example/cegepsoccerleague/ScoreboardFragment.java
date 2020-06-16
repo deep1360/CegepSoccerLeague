@@ -38,6 +38,7 @@ public class ScoreboardFragment extends Fragment implements View.OnClickListener
     private RecyclerView scoreboards_list_recycler_view;
     private ArrayList<Scoreboards_List_model> scoreboardsArrayList;
     private Scoreboards_Rec_adapter scoreboards_rec_adapter;
+    Bundle dataBundle;
 
     public ScoreboardFragment() {
         // Required empty public constructor
@@ -114,10 +115,10 @@ public class ScoreboardFragment extends Fragment implements View.OnClickListener
         user = mAuth.getCurrentUser();
         // Access a Cloud Firestore instance from your Fragment
         db = FirebaseFirestore.getInstance();
-
         if(getArguments()!=null){
             if(getArguments().getString("from")!=null && getArguments().getString("from").equals("league Features")){
                 create_score_btn.setVisibility(View.VISIBLE);
+                dataBundle = getArguments();
             }
         }
         else {
@@ -128,7 +129,7 @@ public class ScoreboardFragment extends Fragment implements View.OnClickListener
     @Override
     public void onClick(View view) {
         if(view == create_score_btn){
-            HomeNavController.navigate(R.id.selectMatchFragment);
+            HomeNavController.navigate(R.id.selectMatchFragment,dataBundle);
         }
     }
 }

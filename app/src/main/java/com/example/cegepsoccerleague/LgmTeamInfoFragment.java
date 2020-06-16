@@ -241,6 +241,13 @@ public class LgmTeamInfoFragment extends Fragment implements View.OnClickListene
                         ImageView playerImage = childLayout.findViewById(R.id.lgm_player_img_view);
                         TextView playerName = childLayout.findViewById(R.id.lgm_player_name);
 
+                        playerName.setText(document.get("first_name")+" "+document.get("last_name"));
+
+                        if(!document.get("player_icon").equals("No Icon")){
+                            byte[] decodedString = Base64.decode(document.get("player_icon").toString(), Base64.DEFAULT);
+                            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                            playerImage.setImageBitmap(decodedByte);
+                        }
                         lgm_team_players_layout.addView(childLayout);
                     }
                 } else {
