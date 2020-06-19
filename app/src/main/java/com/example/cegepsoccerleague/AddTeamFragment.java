@@ -2,6 +2,7 @@ package com.example.cegepsoccerleague;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -45,6 +46,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -71,6 +73,7 @@ public class AddTeamFragment extends Fragment implements View.OnClickListener{
     public Uri image_uri;
     private TextInputLayout team_name_layout, tm_firstname, tm_lastname, tm_contact_num, tm_email, tm_password, tm_confirm_password;
     private String league_id;
+    private static ProgressDialog progressDialog;
 
     public AddTeamFragment() {
         // Required empty public constructor
@@ -157,14 +160,46 @@ public class AddTeamFragment extends Fragment implements View.OnClickListener{
                 tm_confirm_password.setError("Confirm password doesn't match with password!");
             }
             else {
+                team_name_layout.setErrorEnabled(false);
+                tm_firstname.setErrorEnabled(false);
+                tm_lastname.setErrorEnabled(false);
+                tm_contact_num.setErrorEnabled(false);
+                tm_email.setErrorEnabled(false);
+                tm_password.setErrorEnabled(false);
+                tm_confirm_password.setErrorEnabled(false);
+
                 add_team_btn.setEnabled(false);
-                if(image_uri!=null){
-                    new EncodeImage(image_uri).execute();
-                }
-                else {
-                    String encoded_league_icon = "No Icon";
-                    AddTeam(encoded_league_icon);
-                }
+                progressDialog = new ProgressDialog(getActivity());
+                progressDialog.setCancelable(false);
+                progressDialog.setMessage("Creating New Team");
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setProgress(0);
+                progressDialog.show();
+                db.collection("teams")
+                        .whereEqualTo("team_name",team_name_layout.getEditText().getText().toString())
+                        .whereEqualTo("league_id",getArguments().getString("league_id"))
+                        .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            QuerySnapshot document = task.getResult();
+                            if(document.size()>0){
+                                progressDialog.dismiss();
+                                team_name_layout.setError("Team name already exists!");
+                                add_team_btn.setEnabled(true);
+                            }
+                            else {
+                                if(image_uri!=null){
+                                    new EncodeImage(image_uri).execute();
+                                }
+                                else {
+                                    String encoded_league_icon = "No Icon";
+                                    AddTeam(encoded_league_icon);
+                                }
+                            }
+                        }
+                    }
+                });
             }
         }
     }
@@ -323,7 +358,11 @@ public class AddTeamFragment extends Fragment implements View.OnClickListener{
             super.onPostExecute(result);
             if(!result.equals("")) {
                 String encoded_league_icon = result;
-                //AddTeam(encoded_league_icon);
+                AddTeam(encoded_league_icon);
+            }
+            else {
+                progressDialog.dismiss();
+                Toast.makeText(context,"Something Went Wrong!\nPlease Try Again..",Toast.LENGTH_LONG).show();
             }
         }
 
@@ -386,11 +425,13 @@ public class AddTeamFragment extends Fragment implements View.OnClickListener{
                                                                         @Override
                                                                         public void onComplete(@NonNull Task<AuthResult> task) {
                                                                             if (task.isSuccessful()) {
+                                                                                progressDialog.dismiss();
                                                                                 // Sign in success, update UI with the signed-in user's information
                                                                                 add_team_btn.setEnabled(true);
                                                                                 Toast.makeText(context, "Team Added Successfully!", Toast.LENGTH_LONG).show();
                                                                                 HomeNavController.popBackStack();
                                                                             } else {
+                                                                                progressDialog.dismiss();
                                                                                 // If sign in fails, display a message to the user.
                                                                                 Toast.makeText(context,"Something went wrong! Please Try Again", Toast.LENGTH_SHORT).show();
                                                                             }
@@ -402,6 +443,7 @@ public class AddTeamFragment extends Fragment implements View.OnClickListener{
                                                         @Override
                                                         public void onFailure(@NonNull Exception e) {
                                                             add_team_btn.setEnabled(true);
+                                                            progressDialog.dismiss();
                                                             Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                                                         }
                                                     });
@@ -417,6 +459,7 @@ public class AddTeamFragment extends Fragment implements View.OnClickListener{
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     if (task.isSuccessful()) {
+                                                        progressDialog.dismiss();
                                                     }
                                                 }
                                             });
@@ -427,6 +470,7 @@ public class AddTeamFragment extends Fragment implements View.OnClickListener{
 
 
                         } else {
+                            progressDialog.dismiss();
                             // If sign in fails, display a message to the user.
                             Toast.makeText(context,"Team Manager Authetication: " + task.getException().getLocalizedMessage(),Toast.LENGTH_LONG).show();
                             add_team_btn.setEnabled(true);

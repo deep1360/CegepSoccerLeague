@@ -21,7 +21,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -171,23 +174,45 @@ public class ScoreboardInfoFragment extends Fragment {
         /*------------ Configuration of Alert Dialog----------*/
         AlertDialog.Builder DAC_builder = new AlertDialog.Builder(getActivity())
                 .setView(R.layout.delete_score_dialog_layout);
-        final AlertDialog Delete_Player_Dialog = DAC_builder.create();
-        Delete_Player_Dialog.show();
-        MaterialButton delete_cancel_btn = Delete_Player_Dialog.findViewById(R.id.delete_cancel_btn);
-        MaterialButton delelte_continue_btn = Delete_Player_Dialog.findViewById(R.id.delelte_continue_btn);
+        final AlertDialog Delete_Score_Dialog = DAC_builder.create();
+        Delete_Score_Dialog.show();
+        final MaterialButton delete_cancel_btn = Delete_Score_Dialog.findViewById(R.id.delete_cancel_btn);
+        final MaterialButton delelte_continue_btn = Delete_Score_Dialog.findViewById(R.id.delelte_continue_btn);
 
         delete_cancel_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Delete_Player_Dialog.dismiss();
+                Delete_Score_Dialog.dismiss();
             }
         });
 
         delelte_continue_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Delete_Player_Dialog.dismiss();
-                HomeNavController.popBackStack();
+                delelte_continue_btn.setEnabled(false);
+                delete_cancel_btn.setEnabled(false);
+
+                db.collection("scores").document(dataBundle.getString("score_id"))
+                        .delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(context,"Score Deleted Successfully!",Toast.LENGTH_LONG).show();
+                                delelte_continue_btn.setEnabled(true);
+                                delete_cancel_btn.setEnabled(true);
+                                Delete_Score_Dialog.dismiss();
+                                HomeNavController.popBackStack();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(context,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+                                delelte_continue_btn.setEnabled(true);
+                                delete_cancel_btn.setEnabled(true);
+                                Delete_Score_Dialog.dismiss();
+                            }
+                        });
             }
         });
     }
