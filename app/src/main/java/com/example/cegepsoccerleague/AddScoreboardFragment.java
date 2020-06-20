@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -52,6 +53,7 @@ public class AddScoreboardFragment extends Fragment implements View.OnClickListe
             add_sb_team1_goal_saved, add_sb_team2_goal_saved;
     private MaterialButton add_new_score_btn;
     private Bundle dataBundle;
+    public Toolbar HomeToolbar;
 
     public AddScoreboardFragment() {
         // Required empty public constructor
@@ -71,6 +73,7 @@ public class AddScoreboardFragment extends Fragment implements View.OnClickListe
 
         context = getActivity().getApplicationContext();
         HomeNavController = Navigation.findNavController(getActivity(), R.id.home_host_fragment);
+        HomeToolbar = getActivity().findViewById(R.id.home_toolbar);
 
         add_sb_team1_img_view = view.findViewById(R.id.add_sb_team1_img_view);
         add_sb_team2_img_view = view.findViewById(R.id.add_sb_team2_img_view);
@@ -116,6 +119,23 @@ public class AddScoreboardFragment extends Fragment implements View.OnClickListe
                 byte[] decodedString = Base64.decode(dataBundle.getString("team2_icon"), Base64.DEFAULT);
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 add_sb_team2_img_view.setImageBitmap(decodedByte);
+            }
+
+            if(dataBundle.getString("from")!=null && dataBundle.getString("from").equals("update-score")){
+                HomeToolbar.setTitle("Update Score");
+                add_new_score_btn.setText("Update Match Score");
+
+                add_sb_team1_goals.getEditText().setText(dataBundle.getString("team1_goals"));
+                add_sb_team1_fouls.getEditText().setText(dataBundle.getString("team1_fouls"));
+                add_sb_team1_kicks.getEditText().setText(dataBundle.getString("team1_freeKicks"));
+                add_sb_team1_corners.getEditText().setText(dataBundle.getString("team1_corners"));
+                add_sb_team1_goal_saved.getEditText().setText(dataBundle.getString("team1_goalSaved"));
+
+                add_sb_team2_goals.getEditText().setText(dataBundle.getString("team2_goals"));
+                add_sb_team2_fouls.getEditText().setText(dataBundle.getString("team2_fouls"));
+                add_sb_team2_kicks.getEditText().setText(dataBundle.getString("team2_freeKicks"));
+                add_sb_team2_corners.getEditText().setText(dataBundle.getString("team2_corners"));
+                add_sb_team2_goal_saved.getEditText().setText(dataBundle.getString("team2_goalSaved"));
             }
         }
     }
@@ -211,26 +231,48 @@ public class AddScoreboardFragment extends Fragment implements View.OnClickListe
         score_data.put("match_time",match_time);
         score_data.put("match_location",match_location);
 
-        // Add a new document with auto generated ID
-        db.collection("scores")
-                .add(score_data)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        db.collection("schedules").document(match_id).delete();
-                        add_new_score_btn.setEnabled(true);
-                        Toast.makeText(context, "Score Added Successfully!", Toast.LENGTH_LONG).show();
-                        HomeNavController.popBackStack();
-                        HomeNavController.popBackStack();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        add_new_score_btn.setEnabled(true);
-                        Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
+        if(dataBundle.getString("from")!=null && dataBundle.getString("from").equals("update-score")) {
+            db.collection("scores").document(dataBundle.getString("score_id"))
+                    .set(score_data)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            add_new_score_btn.setEnabled(true);
+                            Toast.makeText(context, "Player Updated Successfully!", Toast.LENGTH_LONG).show();
+                            HomeNavController.popBackStack();
+                            HomeNavController.popBackStack();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            add_new_score_btn.setEnabled(true);
+                            Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+        }
+        else {
+            // Add a new document with auto generated ID
+            db.collection("scores")
+                    .add(score_data)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            db.collection("schedules").document(match_id).delete();
+                            add_new_score_btn.setEnabled(true);
+                            Toast.makeText(context, "Score Added Successfully!", Toast.LENGTH_LONG).show();
+                            HomeNavController.popBackStack();
+                            HomeNavController.popBackStack();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            add_new_score_btn.setEnabled(true);
+                            Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+        }
 
 
     }

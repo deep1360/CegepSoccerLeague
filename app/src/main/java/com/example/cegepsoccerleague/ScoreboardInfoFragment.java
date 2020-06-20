@@ -161,6 +161,7 @@ public class ScoreboardInfoFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         if (item.getItemId()==R.id.edit_option){
+            dataBundle.putString("from","update-score");
             HomeNavController.navigate(R.id.addScoreboardFragment,dataBundle);
         }
         else if(item.getItemId()==R.id.delete_option){

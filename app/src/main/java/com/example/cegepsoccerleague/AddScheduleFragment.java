@@ -15,6 +15,7 @@ import androidx.navigation.Navigation;
 
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -50,7 +51,7 @@ public class AddScheduleFragment extends Fragment implements View.OnClickListene
 
     public NavController HomeNavController;
     Bundle dataBundle;
-    ArrayList<String> team_names, team_ids;
+    ArrayList<String> team_names,team2_names, team_ids;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private FirebaseUser user;
@@ -111,6 +112,7 @@ public class AddScheduleFragment extends Fragment implements View.OnClickListene
 
         team_names = new ArrayList<String>();
         team_ids = new ArrayList<String>();
+        team2_names = new ArrayList<String>();
         if (getArguments() != null) {
             dataBundle = getArguments();
             getTeamNames(dataBundle.getString("league_id"));
@@ -134,13 +136,12 @@ public class AddScheduleFragment extends Fragment implements View.OnClickListene
                     /*--------Creating Adapter for Showing Drop Down Menu On Team 1 and Team 2 Selection-----------*/
                     final ArrayAdapter<String> TeamNameAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, team_names);
                     select_team1_name_txtview.setAdapter(TeamNameAdapter);
-                    select_team2_name_txtview.setAdapter(TeamNameAdapter);
                     select_team1_name_txtview.setInputType(0);
-                    select_team2_name_txtview.setInputType(0);
 
                     select_team1_name_txtview.setOnTouchListener(new View.OnTouchListener() {
                         @Override
                         public boolean onTouch(View view, MotionEvent motionEvent) {
+                            match_team1_layout.setErrorEnabled(false);
                             if (team_names.size() > 0) {
                                 // show all suggestions
                                 if (!select_team1_name_txtview.getText().toString().equals("")) {
@@ -155,12 +156,35 @@ public class AddScheduleFragment extends Fragment implements View.OnClickListene
                     select_team2_name_txtview.setOnTouchListener(new View.OnTouchListener() {
                         @Override
                         public boolean onTouch(View view, MotionEvent motionEvent) {
-                            if (team_names.size() > 0) {
-                                // show all suggestions
-                                if (!select_team2_name_txtview.getText().toString().equals("")) {
-                                    TeamNameAdapter.getFilter().filter(null);
+                            if(TextUtils.isEmpty(select_team1_name_txtview.getText().toString().trim()))
+                            {
+                                match_team1_layout.setError("Select Team1 First!");
+                            }
+                            else {
+                                if(team_names.indexOf(select_team1_name_txtview.getText().toString().trim())!=-1){
+                                    team2_names.clear();
+                                    for(String team_name : team_names ){
+                                        if(!team_name.equals(select_team1_name_txtview.getText().toString().trim())) {
+                                            team2_names.add(team_name);
+                                        }
+                                    }
+                                    Log.d("Team1_Size",String.valueOf(team_names.size()));
+
+                                    final ArrayAdapter<String> Team2NameAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, team2_names);
+                                    select_team2_name_txtview.setAdapter(Team2NameAdapter);
+                                    select_team2_name_txtview.setInputType(0);
+
+                                    if (team2_names.size() > 0) {
+                                        // show all suggestions
+                                        if (!select_team2_name_txtview.getText().toString().equals("")) {
+                                            TeamNameAdapter.getFilter().filter(null);
+                                        }
+                                        select_team2_name_txtview.showDropDown();
+                                    }
                                 }
-                                select_team2_name_txtview.showDropDown();
+                                else {
+                                    match_team1_layout.setError("Please Select Valid Team Name");
+                                }
                             }
                             return false;
                         }
@@ -192,6 +216,9 @@ public class AddScheduleFragment extends Fragment implements View.OnClickListene
                 }
             }, yy, mm, dd);
             datePicker.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+            Calendar max_calender = Calendar.getInstance();
+            max_calender.set(yy,mm+4,dd);
+            datePicker.getDatePicker().setMaxDate(max_calender.getTimeInMillis()-1000);
             datePicker.show();
             datePicker.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
             datePicker.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextSize(18);
@@ -201,7 +228,8 @@ public class AddScheduleFragment extends Fragment implements View.OnClickListene
             datePicker.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextSize(18);
             datePicker.getButton(DatePickerDialog.BUTTON_POSITIVE).setTypeface(datePicker.getButton(DatePickerDialog.BUTTON_POSITIVE).getTypeface(), Typeface.BOLD);
 
-        } else if (view == match_time_txt_view) {
+        }
+        else if (view == match_time_txt_view) {
             match_time_error.setVisibility(View.GONE);
             if (match_date_txt_view.getText().toString().equals("Select Date")) {
                 match_time_error.setVisibility(View.VISIBLE);
@@ -240,7 +268,8 @@ public class AddScheduleFragment extends Fragment implements View.OnClickListene
             timePicker.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextSize(18);
             timePicker.getButton(DatePickerDialog.BUTTON_POSITIVE).setTypeface(timePicker.getButton(DatePickerDialog.BUTTON_POSITIVE).getTypeface(), Typeface.BOLD);
 
-        } else if (view == add_schedule_btn) {
+        }
+        else if (view == add_schedule_btn) {
             team1_team2_error_txt.setVisibility(View.GONE);
             match_date_error.setVisibility(View.GONE);
             match_time_error.setVisibility(View.GONE);

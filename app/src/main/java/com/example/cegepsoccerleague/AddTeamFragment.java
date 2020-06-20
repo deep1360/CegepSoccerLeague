@@ -19,6 +19,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -128,7 +129,12 @@ public class AddTeamFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View view) {
         if (view == add_team_icon_cv | view == add_team_icon_txt){
-            SelectProfilePic();
+            if(image_uri!=null){
+                RemovePhotoDialog();
+            }
+            else {
+                SelectProfilePic();
+            }
         }
         else if(view == add_team_btn){
 
@@ -177,7 +183,7 @@ public class AddTeamFragment extends Fragment implements View.OnClickListener{
                 progressDialog.show();
                 db.collection("teams")
                         .whereEqualTo("team_name",team_name_layout.getEditText().getText().toString())
-                        .whereEqualTo("league_id",getArguments().getString("league_id"))
+                        .whereEqualTo("league_id",league_id)
                         .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -202,6 +208,29 @@ public class AddTeamFragment extends Fragment implements View.OnClickListener{
                 });
             }
         }
+    }
+
+    private void RemovePhotoDialog() {
+        final CharSequence[] options = {"Remove Photo", "Select Other Photo", "Cancel"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Change Photo!");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (options[item].equals("Remove Photo")) {
+                    image_uri = null;
+                    add_team_icon_img_view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.add_team_icon));
+                } else if (options[item].equals("Select Other Photo")) {
+                    dialog.dismiss();
+                    SelectProfilePic();
+
+                } else if (options[item].equals("Cancel")) {
+
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
     }
 
     private boolean isEmailValid(String email) {

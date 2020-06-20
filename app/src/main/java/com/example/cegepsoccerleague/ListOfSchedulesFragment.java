@@ -171,8 +171,35 @@ public class ListOfSchedulesFragment extends Fragment implements View.OnClickLis
 
                             if (getArguments() == null) {
                                 String[] date = document.get("match_date").toString().split("-");
-                                if (Integer.parseInt(date[0]) >= yy) {
-                                    if (Integer.parseInt(date[1]) >= mm) {
+                                if (Integer.parseInt(date[0]) > yy) {
+                                    schedulesArrayList.add(new Schedules_List_model(document.getId(),
+                                            document.get("match_location").toString(),
+                                            document.get("match_date").toString(),
+                                            document.get("match_time").toString(),
+                                            document.get("league_id").toString(),
+                                            document.get("team1_id").toString(),
+                                            Team1object.getString("team_name"),
+                                            Team1object.getString("team_icon"),
+                                            document.get("team2_id").toString(),
+                                            Team2object.getString("team_name"),
+                                            Team2object.getString("team_icon")));
+                                }
+                                else if(Integer.parseInt(date[0]) == yy){
+
+                                    if (Integer.parseInt(date[1]) > mm) {
+                                        schedulesArrayList.add(new Schedules_List_model(document.getId(),
+                                                document.get("match_location").toString(),
+                                                document.get("match_date").toString(),
+                                                document.get("match_time").toString(),
+                                                document.get("league_id").toString(),
+                                                document.get("team1_id").toString(),
+                                                Team1object.getString("team_name"),
+                                                Team1object.getString("team_icon"),
+                                                document.get("team2_id").toString(),
+                                                Team2object.getString("team_name"),
+                                                Team2object.getString("team_icon")));
+                                    }
+                                    else if(Integer.parseInt(date[1]) == mm){
                                         if (Integer.parseInt(date[2]) >= dd) {
                                             schedulesArrayList.add(new Schedules_List_model(document.getId(),
                                                     document.get("match_location").toString(),
