@@ -230,14 +230,18 @@ public class UpdateScheduleFragment extends Fragment implements View.OnClickList
             } else if (update_match_date_txt_view.getText().toString().equals(today_date)) {
                 int selected_hour = Integer.parseInt(update_match_time_txt_view.getText().toString().split(":")[0]);
                 int selected_minute = Integer.parseInt(update_match_time_txt_view.getText().toString().split(":")[1]);
-                if (selected_hour >= Hour) {
+                if (selected_hour > Hour) {
+                    UpdateSchedule();
+                }
+                else if(selected_hour == Hour){
                     if (selected_minute < Minute) {
                         update_match_time_error.setVisibility(View.VISIBLE);
                         update_match_time_error.setText("Please enter valid time!");
                     } else {
                         UpdateSchedule();
                     }
-                } else {
+                }
+                else {
                     update_match_time_error.setVisibility(View.VISIBLE);
                     update_match_time_error.setText("Please enter valid time!");
                 }

@@ -2,18 +2,30 @@ package com.example.cegepsoccerleague;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -24,15 +36,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputEditText;
@@ -41,6 +48,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -67,7 +75,11 @@ public class AddLeagueFragment extends Fragment implements View.OnClickListener{
     private ImageView add_league_icon_img_view;
     private MaterialCardView add_league_icon_cv;
     public Uri image_uri;
-    private String league_id;
+    Bundle dataBundle;
+    public Toolbar HomeToolbar;
+    private boolean league_has_icon = false;
+    private static ProgressDialog progressDialog;
+
 
     public AddLeagueFragment() {
         // Required empty public constructor
@@ -87,6 +99,7 @@ public class AddLeagueFragment extends Fragment implements View.OnClickListener{
 
         context = getActivity().getApplicationContext();
         HomeNavController = Navigation.findNavController(getActivity(), R.id.home_host_fragment);
+        HomeToolbar = getActivity().findViewById(R.id.home_toolbar);
 
         league_name_layout = view.findViewById(R.id.league_name_layout);
         league_name_edit_txt = view.findViewById(R.id.league_name_edit_txt);
@@ -106,13 +119,36 @@ public class AddLeagueFragment extends Fragment implements View.OnClickListener{
         db = FirebaseFirestore.getInstance();
         //Get Current User refernece
         user = mAuth.getCurrentUser();
+        if(getArguments()!=null) {
+            if (getArguments().getString("from") != null && getArguments().getString("from").equals("update league")) {
+                dataBundle = getArguments();
+                HomeToolbar.setTitle("Update League");
+                league_name_layout.getEditText().setText(getArguments().getString("league_name"));
+                add_league_btn.setText("Update League");
+
+                if (!dataBundle.getString("league_icon").equals("No Icon")) {
+                    byte[] decodedString = Base64.decode(dataBundle.getString("league_icon"), Base64.DEFAULT);
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                    add_league_icon_img_view.setImageBitmap(decodedByte);
+                    league_has_icon = true;
+                }
+            }
+        }
 
     }
 
     @Override
     public void onClick(View view) {
         if (view == add_league_icon_cv | view == add_league_icon_txt){
-            SelectProfilePic();
+            if(league_has_icon){
+                RemovePhotoDialog();
+            }
+            else if(image_uri!=null){
+                RemovePhotoDialog();
+            }
+            else {
+                SelectProfilePic();
+            }
         }
         else if(view == add_league_btn){
 
@@ -120,9 +156,24 @@ public class AddLeagueFragment extends Fragment implements View.OnClickListener{
                 league_name_layout.setError("Required fields are missing!");
             }
             else {
+                league_name_layout.setErrorEnabled(false);
                 add_league_btn.setEnabled(false);
+                progressDialog = new ProgressDialog(getActivity());
+                progressDialog.setCancelable(false);
+                if(getArguments()!=null){
+                    progressDialog.setMessage("Updating League");
+                }
+                else {
+                    progressDialog.setMessage("Creating New League");
+                }
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setProgress(0);
+                progressDialog.show();
                 if(image_uri!=null){
                     new EncodeImage(image_uri).execute();
+                }
+                else if(league_has_icon){
+                    AddLeague(dataBundle.getString("league_icon"));
                 }
                 else {
                     String encoded_league_icon = "No Icon";
@@ -131,6 +182,30 @@ public class AddLeagueFragment extends Fragment implements View.OnClickListener{
             }
         }
 
+    }
+
+    private void RemovePhotoDialog() {
+        final CharSequence[] options = {"Remove Photo", "Select Other Photo", "Cancel"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Change Photo!");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (options[item].equals("Remove Photo")) {
+                    image_uri = null;
+                    league_has_icon = false;
+                    add_league_icon_img_view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.add_league_icon));
+                } else if (options[item].equals("Select Other Photo")) {
+                    dialog.dismiss();
+                    SelectProfilePic();
+
+                } else if (options[item].equals("Cancel")) {
+
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
     }
 
     /*-------- Below Code is for selecting image from galary or camera -----------*/
@@ -202,9 +277,11 @@ public class AddLeagueFragment extends Fragment implements View.OnClickListener{
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case 1:
+                    league_has_icon = false;
                     add_league_icon_img_view.setImageURI(image_uri);
                     break;
                 case 2:
+                    league_has_icon = false;
                     //data.getData returns the content URI for the selected Image
                     image_uri = data.getData();
                     add_league_icon_img_view.setImageURI(image_uri);
@@ -285,6 +362,10 @@ public class AddLeagueFragment extends Fragment implements View.OnClickListener{
                 String encoded_league_icon = result;
                 AddLeague(encoded_league_icon);
             }
+            else {
+                progressDialog.dismiss();
+                Toast.makeText(context,"Something Went Wrong!\nPlease Try Again..",Toast.LENGTH_LONG).show();
+            }
         }
 
     }
@@ -295,29 +376,70 @@ public class AddLeagueFragment extends Fragment implements View.OnClickListener{
         String league_manager_id = user.getUid();
 
         // Create a new league data object
-        Map<String, Object> league_data = new HashMap<>();
+        final Map<String, Object> league_data = new HashMap<>();
         league_data.put("league_name", league_name);
         league_data.put("league_icon", encoded_league_icon);
         league_data.put("league_manager_id", league_manager_id);
 
-        // Add a new document with auto generated ID
-        db.collection("leagues")
-                .add(league_data)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
+        if(getArguments()!=null){
+            db.collection("leagues").document(dataBundle.getString("league_id"))
+                    .set(league_data)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            progressDialog.dismiss();
+                            add_league_btn.setEnabled(true);
+                            Toast.makeText(context, "League Updated Successfully!", Toast.LENGTH_LONG).show();
+                            HomeNavController.popBackStack();
+                            HomeNavController.popBackStack();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            add_league_btn.setEnabled(true);
+                            Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+        }
+        else {
+            db.collection("leagues").whereEqualTo("league_name",league_name).whereEqualTo("league_manager_id",league_manager_id)
+                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    QuerySnapshot document = task.getResult();
+                    if (document.size()>0){
+                        progressDialog.dismiss();
                         add_league_btn.setEnabled(true);
-                        Toast.makeText(context, "League Created Successfully!", Toast.LENGTH_LONG).show();
-                        HomeNavController.popBackStack();
+                        league_name_layout.setError("League name already exist!");
                     }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        add_league_btn.setEnabled(true);
-                        Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                    else {
+                        // Add a new document with auto generated ID
+                        db.collection("leagues")
+                                .add(league_data)
+                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                    @Override
+                                    public void onSuccess(DocumentReference documentReference) {
+                                        progressDialog.dismiss();
+                                        add_league_btn.setEnabled(true);
+                                        Toast.makeText(context, "League Created Successfully!", Toast.LENGTH_LONG).show();
+                                        HomeNavController.popBackStack();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        progressDialog.dismiss();
+                                        add_league_btn.setEnabled(true);
+                                        Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                                    }
+                                });
                     }
-                });
+                }
+            });
+
+        }
     }
 
 }

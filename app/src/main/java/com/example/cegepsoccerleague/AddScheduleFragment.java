@@ -2,6 +2,7 @@ package com.example.cegepsoccerleague;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.graphics.Typeface;
@@ -61,6 +62,7 @@ public class AddScheduleFragment extends Fragment implements View.OnClickListene
     private TextInputLayout match_location_layout, match_team1_layout, match_team2_layout;
     private MaterialButton add_schedule_btn;
     private TextView team1_team2_error_txt;
+    private static ProgressDialog progressDialog;
 
     public AddScheduleFragment() {
         // Required empty public constructor
@@ -299,14 +301,18 @@ public class AddScheduleFragment extends Fragment implements View.OnClickListene
             } else if (match_date_txt_view.getText().toString().equals(today_date)) {
                 int selected_hour = Integer.parseInt(match_time_txt_view.getText().toString().split(":")[0]);
                 int selected_minute = Integer.parseInt(match_time_txt_view.getText().toString().split(":")[1]);
-                if (selected_hour >= Hour) {
+                if (selected_hour > Hour) {
+                    AddSchedule();
+                }
+                else if(selected_hour == Hour){
                     if (selected_minute < Minute) {
                         match_time_error.setVisibility(View.VISIBLE);
                         match_time_error.setText("Please enter valid time!");
                     } else {
                         AddSchedule();
                     }
-                } else {
+                }
+                else {
                     match_time_error.setVisibility(View.VISIBLE);
                     match_time_error.setText("Please enter valid time!");
                 }
@@ -337,6 +343,12 @@ public class AddScheduleFragment extends Fragment implements View.OnClickListene
                 final String team1_id = team_ids.get(team1index);
                 final String team2_id = team_ids.get(team2index);
                 add_schedule_btn.setEnabled(false);
+                progressDialog = new ProgressDialog(getActivity());
+                progressDialog.setCancelable(false);
+                progressDialog.setMessage("Creating New Team");
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setProgress(0);
+                progressDialog.show();
                 db.collection("schedules")
                         .whereIn("team1_id", Arrays.asList(team1_id, team2_id))
                         .whereEqualTo("match_date", match_date)
@@ -346,6 +358,7 @@ public class AddScheduleFragment extends Fragment implements View.OnClickListene
                         if (task.isSuccessful()) {
                             if (task.getResult().size() > 0) {
                                 team1_team2_error_txt.setVisibility(View.VISIBLE);
+                                progressDialog.dismiss();
                                 add_schedule_btn.setEnabled(true);
                             } else {
                                 db.collection("schedules")
@@ -357,6 +370,7 @@ public class AddScheduleFragment extends Fragment implements View.OnClickListene
                                         if (task.isSuccessful()) {
                                             if (task.getResult().size() > 0) {
                                                 team1_team2_error_txt.setVisibility(View.VISIBLE);
+                                                progressDialog.dismiss();
                                                 add_schedule_btn.setEnabled(true);
                                             } else {
                                                 //Creating a data object to add schedule in database
@@ -376,6 +390,7 @@ public class AddScheduleFragment extends Fragment implements View.OnClickListene
                                                             @Override
                                                             public void onSuccess(DocumentReference documentReference) {
                                                                 add_schedule_btn.setEnabled(true);
+                                                                progressDialog.dismiss();
                                                                 Toast.makeText(context, "Schedule Added Successfully!", Toast.LENGTH_LONG).show();
                                                                 HomeNavController.popBackStack();
                                                             }
@@ -383,6 +398,7 @@ public class AddScheduleFragment extends Fragment implements View.OnClickListene
                                                         .addOnFailureListener(new OnFailureListener() {
                                                             @Override
                                                             public void onFailure(@NonNull Exception e) {
+                                                                progressDialog.dismiss();
                                                                 add_schedule_btn.setEnabled(true);
                                                                 Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                                                             }

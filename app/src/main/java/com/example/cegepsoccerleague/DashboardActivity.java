@@ -51,6 +51,12 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.clear();
+    }
+
     //Setting Up Navigation Drawer
     public void setupNavigation(){
 

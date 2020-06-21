@@ -3,6 +3,7 @@ package com.example.cegepsoccerleague;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -28,6 +29,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private TextInputEditText email_edit_txt, password_edit_txt;
     private FirebaseAuth mAuth;
     private FirebaseUser user;
+    private static ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         if (view == login_btn) {
+            login_email.setErrorEnabled(false);
+            login_password.setErrorEnabled(false);
             //getting value of email and password layout
             String email = login_email.getEditText().getText().toString().trim();
             String password = login_password.getEditText().getText().toString().trim();
@@ -85,6 +89,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void login_user(final String email, final String password) {
         login_btn.setEnabled(false);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Logging");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setProgress(0);
+        progressDialog.show();
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -93,12 +103,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             // Sign in success, update UI with the signed-in user's information
                             user = mAuth.getCurrentUser();
                             login_btn.setEnabled(true);
+                            progressDialog.dismiss();
                             PreferenceData.setUserpassword(getApplicationContext(),password);
                             PreferenceData.setUseremail(getApplicationContext(),email);
                             Toast.makeText(LoginActivity.this, "Login Successfull!", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(LoginActivity.this,DashboardActivity.class));
                             finish();
                         } else {
+                            progressDialog.dismiss();
                             // If sign in fails, display a message to the user.
                             Toast.makeText(LoginActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                             login_btn.setEnabled(true);
