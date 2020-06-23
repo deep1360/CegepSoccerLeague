@@ -1,5 +1,6 @@
 package com.example.cegepsoccerleague;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -219,8 +220,16 @@ public class MatchScheduleInfoFragment extends Fragment{
         delelte_continue_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                final ProgressDialog progressDialog = new ProgressDialog(getActivity());
+                progressDialog.setCancelable(false);
+
+                progressDialog.setMessage("Deleting Schedule");
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setProgress(0);
+                progressDialog.show();
                 delelte_continue_btn.setEnabled(false);
                 delete_cancel_btn.setEnabled(false);
+                Delete_Schedule_Dialog.dismiss();
                 db.collection("schedules").document(getArguments().getString("match_id"))
                         .delete()
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -229,7 +238,7 @@ public class MatchScheduleInfoFragment extends Fragment{
                                 delelte_continue_btn.setEnabled(true);
                                 delete_cancel_btn.setEnabled(true);
                                 Toast.makeText(context,"Schedule Deleted Successfully!",Toast.LENGTH_LONG).show();
-                                Delete_Schedule_Dialog.dismiss();
+                                progressDialog.dismiss();
                                 HomeNavController.popBackStack();
                             }
                         })
@@ -239,7 +248,7 @@ public class MatchScheduleInfoFragment extends Fragment{
                                 delelte_continue_btn.setEnabled(true);
                                 delete_cancel_btn.setEnabled(true);
                                 Toast.makeText(context,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
-                                Delete_Schedule_Dialog.dismiss();
+                                progressDialog.dismiss();
                             }
                         });
             }

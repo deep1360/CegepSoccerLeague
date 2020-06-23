@@ -1,5 +1,6 @@
 package com.example.cegepsoccerleague;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -54,6 +55,7 @@ public class SelectMatchFragment extends Fragment {
 
     Bundle dataBundle;
     JSONObject teamsObject;
+    private static ProgressDialog progressDialog;
 
 
     public SelectMatchFragment() {
@@ -129,6 +131,13 @@ public class SelectMatchFragment extends Fragment {
 
     /*----------Get List Of Schedules-----------*/
     private void getSchedules() {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setCancelable(false);
+
+        progressDialog.setMessage("Fetching Matches");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setProgress(0);
+        progressDialog.show();
         //Clearing List Items Before Adding it
         schedulesArrayList.clear();
         // Create a reference to the Schedules collection
@@ -147,6 +156,7 @@ public class SelectMatchFragment extends Fragment {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
+                    progressDialog.dismiss();
                     Calendar c = Calendar.getInstance();
                     int yy = c.get(Calendar.YEAR);
                     int mm = c.get(Calendar.MONTH) + 1;
@@ -208,6 +218,9 @@ public class SelectMatchFragment extends Fragment {
                             e.printStackTrace();
                         }
                     }
+                    if(schedulesArrayList.size() == 0){
+                        Toast.makeText(context,"No Matches available for adding socre!",Toast.LENGTH_LONG).show();
+                    }
                     selectMatch_rec_adapter.notifyDataSetChanged();
                     selectMatch_rec_adapter.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -231,6 +244,7 @@ public class SelectMatchFragment extends Fragment {
                         }
                     });
                 } else {
+                    progressDialog.dismiss();
                     Toast.makeText(context, task.getException().getLocalizedMessage(), Toast.LENGTH_LONG).show();
                 }
             }

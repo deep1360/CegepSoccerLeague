@@ -1,6 +1,7 @@
 package com.example.cegepsoccerleague;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -61,6 +62,7 @@ public class UpdateScheduleFragment extends Fragment implements View.OnClickList
     private MaterialButton update_schedule_btn;
     private TextView update_team1_team2_error_txt;
     private ImageView us_team1_img_view, us_team2_img_view;
+    private ProgressDialog progressDialog;
 
     public UpdateScheduleFragment() {
         // Required empty public constructor
@@ -253,6 +255,13 @@ public class UpdateScheduleFragment extends Fragment implements View.OnClickList
 
     /*----------- Update Schedule Method Allows to Update Only Date Time and Location -----------*/
     private void UpdateSchedule(){
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setCancelable(false);
+
+        progressDialog.setMessage("Updating Schedule");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setProgress(0);
+        progressDialog.show();
         final String match_date = update_match_date_txt_view.getText().toString().trim();
         final String match_time = update_match_time_txt_view.getText().toString().trim();
         final String match_location = update_match_location_layout.getEditText().getText().toString().trim();
@@ -268,6 +277,7 @@ public class UpdateScheduleFragment extends Fragment implements View.OnClickList
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     if (task.getResult().size() > 0) {
+                        progressDialog.dismiss();
                         update_team1_team2_error_txt.setVisibility(View.VISIBLE);
                         update_schedule_btn.setEnabled(true);
                     } else {
@@ -279,6 +289,7 @@ public class UpdateScheduleFragment extends Fragment implements View.OnClickList
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                 if (task.isSuccessful()) {
                                     if (task.getResult().size() > 0) {
+                                        progressDialog.dismiss();
                                         update_team1_team2_error_txt.setVisibility(View.VISIBLE);
                                         update_schedule_btn.setEnabled(true);
                                     } else {
@@ -297,6 +308,7 @@ public class UpdateScheduleFragment extends Fragment implements View.OnClickList
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
+                                                        progressDialog.dismiss();
                                                         update_schedule_btn.setEnabled(true);
                                                         Toast.makeText(context, "Schedule Added Successfully!", Toast.LENGTH_LONG).show();
                                                         HomeNavController.popBackStack();
@@ -306,6 +318,7 @@ public class UpdateScheduleFragment extends Fragment implements View.OnClickList
                                                 .addOnFailureListener(new OnFailureListener() {
                                                     @Override
                                                     public void onFailure(@NonNull Exception e) {
+                                                        progressDialog.dismiss();
                                                         update_schedule_btn.setEnabled(true);
                                                         Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                                                     }

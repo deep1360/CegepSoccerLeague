@@ -1,5 +1,6 @@
 package com.example.cegepsoccerleague;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -46,6 +47,7 @@ public class ListOfLeaguesFragment extends Fragment implements View.OnClickListe
     private RecyclerView leagues_list_recycler_view;
     private ArrayList<Leagues_List_model> LeaguesArrayList;
     private Leagues_Rec_adapter leagues_rec_adapter;
+    private static ProgressDialog progressDialog;
 
 
     public ListOfLeaguesFragment() {
@@ -104,6 +106,20 @@ public class ListOfLeaguesFragment extends Fragment implements View.OnClickListe
     }
 
     private void getLeauges(){
+        if(progressDialog!=null && progressDialog.isShowing()){
+            progressDialog.dismiss();
+        }
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setCancelable(true);
+        if(getArguments()!=null) {
+            progressDialog.setMessage("Fetching Leagues");
+        }
+        else {
+            progressDialog.setMessage("Processing");
+        }
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setProgress(0);
+        progressDialog.show();
         //Clearing List Items Before Adding it
         LeaguesArrayList.clear();
         // Create a reference to the cities collection
@@ -122,6 +138,7 @@ public class ListOfLeaguesFragment extends Fragment implements View.OnClickListe
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
+                    progressDialog.dismiss();
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         LeaguesArrayList.add(new Leagues_List_model(document.getId(),
                                 document.get("league_name").toString(),
@@ -151,6 +168,7 @@ public class ListOfLeaguesFragment extends Fragment implements View.OnClickListe
                         }
                     });
                 } else {
+                    progressDialog.dismiss();
                     Toast.makeText(context,task.getException().getLocalizedMessage(),Toast.LENGTH_LONG).show();
                 }
             }

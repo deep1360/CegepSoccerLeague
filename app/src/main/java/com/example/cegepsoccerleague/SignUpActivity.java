@@ -3,6 +3,7 @@ package com.example.cegepsoccerleague;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -33,6 +34,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private FirebaseUser user;
+    private static ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +67,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View view) {
         if(view==signup_btn){
+            signup_firstname.setErrorEnabled(false);
+            signup_lastname.setErrorEnabled(false);
+            signup_email.setErrorEnabled(false);
+            signup_password.setErrorEnabled(false);
+            signup_confirm_password.setErrorEnabled(false);
             String first_name = signup_firstname.getEditText().getText().toString().trim();
             String last_name = signup_lastname.getEditText().getText().toString().trim();
             String email = signup_email.getEditText().getText().toString().trim();
@@ -102,7 +109,13 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     private void sign_up_User(final String first_name, final String last_name, final String email, final String password) {
         signup_btn.setEnabled(false);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(false);
 
+        progressDialog.setMessage("Signing Up");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setProgress(0);
+        progressDialog.show();
         //Creating User in Firebase Authentication
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -127,6 +140,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
+                                            progressDialog.dismiss();
                                             Toast.makeText(SignUpActivity.this,"Signed Up successfully!",Toast.LENGTH_LONG).show();
                                             signup_btn.setEnabled(true);
                                             mAuth.signOut();
@@ -136,7 +150,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                                     }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-
+                                    progressDialog.dismiss();
                                     user.delete()
                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
@@ -152,6 +166,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
 
                         } else {
+                            progressDialog.dismiss();
                             // If sign in fails, display a message to the user.
                             Toast.makeText(SignUpActivity.this,task.getException().getLocalizedMessage(),Toast.LENGTH_LONG).show();
                             signup_btn.setEnabled(true);

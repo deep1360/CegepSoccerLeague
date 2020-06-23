@@ -1,5 +1,6 @@
 package com.example.cegepsoccerleague;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -46,6 +47,7 @@ public class UpdateProfileFragment extends Fragment implements View.OnClickListe
     private Context context;
     private String user_type,user_email;
     public NavController HomeNavController;
+    private static ProgressDialog progressDialog;
 
     public UpdateProfileFragment() {
         // Required empty public constructor
@@ -105,6 +107,10 @@ public class UpdateProfileFragment extends Fragment implements View.OnClickListe
     @Override
     public void onClick(View view) {
         if(view == update_profile_btn){
+            update_confirm_password.setErrorEnabled(false);
+            update_password.setErrorEnabled(false);
+            update_firstname.setErrorEnabled(false);
+            update_lastname.setErrorEnabled(false);
             String first_name = update_firstname.getEditText().getText().toString().trim();
             String last_name = update_lastname.getEditText().getText().toString().trim();
             String password = update_password.getEditText().getText().toString().trim();
@@ -126,6 +132,7 @@ public class UpdateProfileFragment extends Fragment implements View.OnClickListe
                 update_confirm_password.setError("Confirm password doesn't match with password!");
             }
             else {
+
                 update_User(first_name,last_name,password);
             }
         }
@@ -133,6 +140,13 @@ public class UpdateProfileFragment extends Fragment implements View.OnClickListe
 
     private void update_User(final String first_name, final String last_name, final String password) {
         update_profile_btn.setEnabled(false);
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setCancelable(false);
+
+        progressDialog.setMessage("Updating Profile");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setProgress(0);
+        progressDialog.show();
         user.updatePassword(password)
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
                     @Override
@@ -144,6 +158,7 @@ public class UpdateProfileFragment extends Fragment implements View.OnClickListe
                             usermap.put("last_name", last_name);
                             usermap.put("user_type",user_type);
                             usermap.put("email",user_email);
+                            usermap.put("password",password);
                             // Add a new document with user's generated ID in authentication
                             db.collection("users")
                                     .document(user.getUid())
@@ -151,6 +166,7 @@ public class UpdateProfileFragment extends Fragment implements View.OnClickListe
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
+                                            progressDialog.dismiss();
                                             Toast.makeText(context,"Profile Updated successfully!",Toast.LENGTH_LONG).show();
                                             update_profile_btn.setEnabled(true);
                                             ((DashboardActivity)getActivity()).setupNavigation();
@@ -160,6 +176,7 @@ public class UpdateProfileFragment extends Fragment implements View.OnClickListe
                                     }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
+                                    progressDialog.dismiss();
                                     user.updatePassword(PreferenceData.getUserpassword(context))
                                             .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
                                                 @Override
@@ -174,6 +191,7 @@ public class UpdateProfileFragment extends Fragment implements View.OnClickListe
                                 }
                             });
                         } else {
+                            progressDialog.dismiss();
                             Toast.makeText(context, task.getException().getLocalizedMessage(), Toast.LENGTH_LONG).show();
                             update_profile_btn.setEnabled(true);
                         }

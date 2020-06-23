@@ -2,6 +2,7 @@ package com.example.cegepsoccerleague;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -73,7 +75,8 @@ public class AddPlayerFragment extends Fragment implements View.OnClickListener{
     public Uri image_uri;
     private String team_id = "",player_id="";
     public Toolbar HomeToolbar;
-    private Boolean update_has_image = false;
+    private boolean update_has_image = false;
+    private static ProgressDialog progressDialog;
 
 
     public AddPlayerFragment() {
@@ -144,7 +147,15 @@ public class AddPlayerFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View view) {
         if (view == add_player_icon_cv | view == add_player_icon_txt){
-            SelectProfilePic();
+            if(update_has_image){
+                RemovePhotoDialog();
+            }
+            else if(image_uri!=null){
+                RemovePhotoDialog();
+            }
+            else {
+                SelectProfilePic();
+            }
         }
         else if(view == add_player_btn){
             player_first_name_layout.setErrorEnabled(false);
@@ -172,7 +183,22 @@ public class AddPlayerFragment extends Fragment implements View.OnClickListener{
                 player_position_layout.setError("Required fields are missing!");
             }
             else {
+                player_first_name_layout.setErrorEnabled(false);
+                player_last_name_layout.setErrorEnabled(false);
+                player_age_layout.setErrorEnabled(false);
+                player_position_layout.setErrorEnabled(false);
+                progressDialog = new ProgressDialog(getActivity());
+                progressDialog.setCancelable(false);
 
+                if(getArguments().getString("from")!=null && getArguments().getString("from").equals("update player")){
+                    progressDialog.setMessage("Updating Player");
+                }
+                else {
+                    progressDialog.setMessage("Creating New Player");
+                }
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setProgress(0);
+                progressDialog.show();
                 add_player_btn.setEnabled(false);
                 if(image_uri!=null){
                     new EncodeImage(image_uri).execute();
@@ -187,6 +213,30 @@ public class AddPlayerFragment extends Fragment implements View.OnClickListener{
                 }
             }
         }
+    }
+
+    private void RemovePhotoDialog() {
+        final CharSequence[] options = {"Remove Photo", "Select Other Photo", "Cancel"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Change Photo!");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (options[item].equals("Remove Photo")) {
+                    image_uri = null;
+                    update_has_image = false;
+                    add_player_icon_img_view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.add_player_icon));
+                } else if (options[item].equals("Select Other Photo")) {
+                    dialog.dismiss();
+                    SelectProfilePic();
+
+                } else if (options[item].equals("Cancel")) {
+
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
     }
 
     /*-------- Below Code is for selecting image from galary or camera -----------*/
@@ -342,11 +392,15 @@ public class AddPlayerFragment extends Fragment implements View.OnClickListener{
                 AddPlayer(encoded_league_icon);
 
             }
+            else {
+                progressDialog.dismiss();
+                Toast.makeText(context,"Something Went Wrong!\nPlease Try Again..",Toast.LENGTH_LONG).show();
+            }
         }
 
     }
 
-    // Adding Team in database
+    // Adding Player in database
     private void AddPlayer(final String encoded_league_icon) {
 
         final String first_name = player_first_name_layout.getEditText().getText().toString().trim();
@@ -370,6 +424,7 @@ public class AddPlayerFragment extends Fragment implements View.OnClickListener{
                         @Override
                         public void onSuccess(Void aVoid) {
                             add_player_btn.setEnabled(true);
+                            progressDialog.dismiss();
                             Toast.makeText(context, "Player Updated Successfully!", Toast.LENGTH_LONG).show();
                             HomeNavController.popBackStack();
                             HomeNavController.popBackStack();
@@ -379,6 +434,7 @@ public class AddPlayerFragment extends Fragment implements View.OnClickListener{
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             add_player_btn.setEnabled(true);
+                            progressDialog.dismiss();
                             Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                         }
                     });
@@ -391,6 +447,7 @@ public class AddPlayerFragment extends Fragment implements View.OnClickListener{
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
                             add_player_btn.setEnabled(true);
+                            progressDialog.dismiss();
                             Toast.makeText(context, "Player Added Successfully!", Toast.LENGTH_LONG).show();
                             HomeNavController.popBackStack();
                         }
@@ -399,6 +456,7 @@ public class AddPlayerFragment extends Fragment implements View.OnClickListener{
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             add_player_btn.setEnabled(true);
+                            progressDialog.dismiss();
                             Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                         }
                     });

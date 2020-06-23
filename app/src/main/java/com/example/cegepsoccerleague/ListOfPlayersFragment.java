@@ -1,5 +1,6 @@
 package com.example.cegepsoccerleague;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -48,6 +49,7 @@ public class ListOfPlayersFragment extends Fragment implements View.OnClickListe
     private ArrayList<Players_List_model> playersArrayList;
     private Players_Rec_adapter players_rec_adapter;
     private String team_id = "";
+    private static ProgressDialog progressDialog;
 
     public ListOfPlayersFragment() {
         // Required empty public constructor
@@ -118,6 +120,13 @@ public class ListOfPlayersFragment extends Fragment implements View.OnClickListe
     }
 
     private void getPlayers(){
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setCancelable(false);
+
+        progressDialog.setMessage("Fetching Players");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setProgress(0);
+        progressDialog.show();
         //Clearing List Items Before Adding it
         playersArrayList.clear();
 
@@ -126,6 +135,10 @@ public class ListOfPlayersFragment extends Fragment implements View.OnClickListe
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
+                    progressDialog.dismiss();
+                    if(task.getResult().size()==0){
+                        Toast.makeText(context,"No Players Have Been Created Yet!",Toast.LENGTH_LONG).show();
+                    }
                     for (QueryDocumentSnapshot document : task.getResult()) {
 
                         playersArrayList.add(new Players_List_model(document.getId(),
@@ -163,6 +176,7 @@ public class ListOfPlayersFragment extends Fragment implements View.OnClickListe
                         }
                     });
                 } else {
+                    progressDialog.dismiss();
                     Toast.makeText(context,task.getException().getLocalizedMessage(),Toast.LENGTH_LONG).show();
                 }
             }

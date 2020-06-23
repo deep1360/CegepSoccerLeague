@@ -151,7 +151,9 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 break;
             case R.id.tm_matches:
                 if(HomeNavController.getCurrentDestination().getId()==R.id.homeFragment) {
-                    HomeNavController.navigate(R.id.listOfSchedulesFragment);
+                    Bundle dataBundle = new Bundle();
+                    dataBundle.putString("from","TM-matches");
+                    HomeNavController.navigate(R.id.listOfSchedulesFragment,dataBundle);
                 }
                 break;
             case R.id.tm_logout:

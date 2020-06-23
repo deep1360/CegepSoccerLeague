@@ -1,5 +1,6 @@
 package com.example.cegepsoccerleague;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -190,9 +191,16 @@ public class ScoreboardInfoFragment extends Fragment {
         delelte_continue_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                final ProgressDialog progressDialog = new ProgressDialog(getActivity());
+                progressDialog.setCancelable(false);
+
+                progressDialog.setMessage("Deleting Score");
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setProgress(0);
+                progressDialog.show();
                 delelte_continue_btn.setEnabled(false);
                 delete_cancel_btn.setEnabled(false);
-
+                Delete_Score_Dialog.dismiss();
                 db.collection("scores").document(dataBundle.getString("score_id"))
                         .delete()
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -201,7 +209,7 @@ public class ScoreboardInfoFragment extends Fragment {
                                 Toast.makeText(context,"Score Deleted Successfully!",Toast.LENGTH_LONG).show();
                                 delelte_continue_btn.setEnabled(true);
                                 delete_cancel_btn.setEnabled(true);
-                                Delete_Score_Dialog.dismiss();
+                                progressDialog.dismiss();
                                 HomeNavController.popBackStack();
                             }
                         })
@@ -211,7 +219,7 @@ public class ScoreboardInfoFragment extends Fragment {
                                 Toast.makeText(context,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
                                 delelte_continue_btn.setEnabled(true);
                                 delete_cancel_btn.setEnabled(true);
-                                Delete_Score_Dialog.dismiss();
+                                progressDialog.dismiss();
                             }
                         });
             }

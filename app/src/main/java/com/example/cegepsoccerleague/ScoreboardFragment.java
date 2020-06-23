@@ -1,5 +1,6 @@
 package com.example.cegepsoccerleague;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -50,6 +51,7 @@ public class ScoreboardFragment extends Fragment implements View.OnClickListener
     private ArrayList<Scoreboards_List_model> scoreboardsArrayList;
     private Scoreboards_Rec_adapter scoreboards_rec_adapter;
     Bundle dataBundle;
+    private static ProgressDialog progressDialog;
 
     public ScoreboardFragment() {
         // Required empty public constructor
@@ -115,6 +117,20 @@ public class ScoreboardFragment extends Fragment implements View.OnClickListener
 
     /*----------Getting Team Data and Creating a Json Object Of Teams------------*/
     private void getTeams() {
+        if(progressDialog!=null && progressDialog.isShowing()){
+            progressDialog.dismiss();
+        }
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setCancelable(true);
+        if(getArguments()!=null) {
+            progressDialog.setMessage("Fetching Match Scores");
+        }
+        else {
+            progressDialog.setMessage("Processing");
+        }
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setProgress(0);
+        progressDialog.show();
         db.collection("teams").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -154,6 +170,10 @@ public class ScoreboardFragment extends Fragment implements View.OnClickListener
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
+                    progressDialog.dismiss();
+                    if (task.getResult().size()==0){
+                        Toast.makeText(context,"No Scores Have Been Added Yet!",Toast.LENGTH_LONG).show();
+                    }
                     for (QueryDocumentSnapshot document : task.getResult()) {
 
                         try {
@@ -219,6 +239,7 @@ public class ScoreboardFragment extends Fragment implements View.OnClickListener
                         }
                     });
                 } else {
+                    progressDialog.dismiss();
                     Toast.makeText(context,task.getException().getLocalizedMessage(),Toast.LENGTH_LONG).show();
                 }
             }

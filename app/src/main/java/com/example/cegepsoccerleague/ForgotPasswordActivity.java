@@ -3,6 +3,7 @@ package com.example.cegepsoccerleague;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -23,6 +24,7 @@ public class ForgotPasswordActivity extends AppCompatActivity implements View.On
     private TextInputEditText forgot_email_edit_txt;
     private MaterialButton forgot_send_link_btn;
     private FirebaseAuth mAuth;
+    private static ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +51,19 @@ public class ForgotPasswordActivity extends AppCompatActivity implements View.On
     @Override
     public void onClick(View view) {
         if(view==forgot_send_link_btn){
+            forgot_email.setErrorEnabled(false);
             final String email = forgot_email.getEditText().getText().toString().trim();
             if(!isEmailValid(email)){
                 forgot_email.setError("Please enter valid email!");
             }
             else {
+                progressDialog = new ProgressDialog(this);
+                progressDialog.setCancelable(false);
+
+                progressDialog.setMessage("Validating User and Sending Link");
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setProgress(0);
+                progressDialog.show();
                 forgot_send_link_btn.setEnabled(false);
                 mAuth.sendPasswordResetEmail(email)
                         .addOnCompleteListener(this, new OnCompleteListener<Void>() {
@@ -62,8 +72,10 @@ public class ForgotPasswordActivity extends AppCompatActivity implements View.On
                                 if (task.isSuccessful()) {
                                     Toast.makeText(ForgotPasswordActivity.this, "Reset Password link is sent on your email!", Toast.LENGTH_LONG).show();
                                     forgot_send_link_btn.setEnabled(true);
+                                    progressDialog.dismiss();
                                     finish();
                                 } else {
+                                    progressDialog.dismiss();
                                     Toast.makeText(ForgotPasswordActivity.this, "Email not found in database!", Toast.LENGTH_LONG).show();
                                     forgot_send_link_btn.setEnabled(true);
                                 }

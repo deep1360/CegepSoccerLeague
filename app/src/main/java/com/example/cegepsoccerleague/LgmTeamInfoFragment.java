@@ -1,5 +1,6 @@
 package com.example.cegepsoccerleague;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -54,6 +55,7 @@ public class LgmTeamInfoFragment extends Fragment implements View.OnClickListene
     private ImageView lgm_team_info_img_view;
     private TextView lgm_team_info_name, lgm_team_manager_name, lgm_team_manager_contact, lgm_team_manager_email;
     String team_id = "",team_manager_id="",team_manager_password="";
+    private static ProgressDialog progressDialog;
 
 
     public LgmTeamInfoFragment() {
@@ -138,9 +140,16 @@ public class LgmTeamInfoFragment extends Fragment implements View.OnClickListene
         delelte_continue_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progressDialog = new ProgressDialog(getActivity());
+                progressDialog.setCancelable(false);
 
+                progressDialog.setMessage("Deleting Team");
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setProgress(0);
+                progressDialog.show();
                 delelte_continue_btn.setEnabled(false);
                 delete_cancel_btn.setEnabled(false);
+                Delete_Dialog.dismiss();
                 db.collection("players").whereEqualTo("team_id",team_id).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -174,11 +183,10 @@ public class LgmTeamInfoFragment extends Fragment implements View.OnClickListene
                                                                                                         public void onComplete(@NonNull Task<AuthResult> task) {
                                                                                                             if (task.isSuccessful()) {
                                                                                                                 // Sign in success, update UI with the signed-in user's information
-                                                                                                                //add_team_btn.setEnabled(true);
                                                                                                                 Toast.makeText(context, "Team Deleted Successfully!", Toast.LENGTH_LONG).show();
                                                                                                                 delelte_continue_btn.setEnabled(true);
                                                                                                                 delete_cancel_btn.setEnabled(true);
-                                                                                                                Delete_Dialog.dismiss();
+                                                                                                                progressDialog.dismiss();
                                                                                                                 HomeNavController.popBackStack();
                                                                                                             }
                                                                                                         }
@@ -190,7 +198,7 @@ public class LgmTeamInfoFragment extends Fragment implements View.OnClickListene
                                                                             else {
                                                                                 delelte_continue_btn.setEnabled(true);
                                                                                 delete_cancel_btn.setEnabled(true);
-                                                                                Delete_Dialog.dismiss();
+                                                                                progressDialog.dismiss();
                                                                                 Toast.makeText(context,"Something went wrong! Please Try Again", Toast.LENGTH_SHORT).show();
                                                                             }
                                                                         }
@@ -203,7 +211,7 @@ public class LgmTeamInfoFragment extends Fragment implements View.OnClickListene
                                                             delelte_continue_btn.setEnabled(true);
                                                             delete_cancel_btn.setEnabled(true);
                                                             Toast.makeText(context,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
-                                                            Delete_Dialog.dismiss();
+                                                            progressDialog.dismiss();
                                                         }
                                                     });
                                         }
@@ -213,14 +221,14 @@ public class LgmTeamInfoFragment extends Fragment implements View.OnClickListene
                                         public void onFailure(@NonNull Exception e) {
                                             delelte_continue_btn.setEnabled(true);
                                             delete_cancel_btn.setEnabled(true);
-                                            Delete_Dialog.dismiss();
+                                            progressDialog.dismiss();
                                             Toast.makeText(context,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
                                         }
                                     });
                         } else {
                             delelte_continue_btn.setEnabled(true);
                             delete_cancel_btn.setEnabled(true);
-                            Delete_Dialog.dismiss();
+                            progressDialog.dismiss();
                             Toast.makeText(context,task.getException().getLocalizedMessage(),Toast.LENGTH_LONG).show();
                         }
                     }
@@ -230,12 +238,19 @@ public class LgmTeamInfoFragment extends Fragment implements View.OnClickListene
     }
 
     private void CreatePlayersListView(){
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setCancelable(false);
 
+        progressDialog.setMessage("Fetching Team");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setProgress(0);
+        progressDialog.show();
         lgm_team_players_layout.removeAllViews();
         db.collection("players").whereEqualTo("team_id",team_id).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
+                    progressDialog.dismiss();
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         ConstraintLayout childLayout = (ConstraintLayout) getLayoutInflater().inflate(R.layout.lgm_team_player_view, null);
                         ImageView playerImage = childLayout.findViewById(R.id.lgm_player_img_view);
@@ -251,6 +266,7 @@ public class LgmTeamInfoFragment extends Fragment implements View.OnClickListene
                         lgm_team_players_layout.addView(childLayout);
                     }
                 } else {
+                    progressDialog.dismiss();
                     Toast.makeText(context,task.getException().getLocalizedMessage(),Toast.LENGTH_LONG).show();
                 }
             }

@@ -2,6 +2,7 @@ package com.example.cegepsoccerleague;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -72,6 +73,7 @@ public class UpdateTeamInfoFragment extends Fragment implements View.OnClickList
     public Uri image_uri;
     String team_id = "",team_icon="",league_id="";
     boolean team_has_icon =false;
+    private static ProgressDialog progressDialog;
 
     public UpdateTeamInfoFragment() {
         // Required empty public constructor
@@ -147,7 +149,13 @@ public class UpdateTeamInfoFragment extends Fragment implements View.OnClickList
                 update_team_contact_layout.setError("Please enter valid contact number!");
             }
             else {
+                progressDialog = new ProgressDialog(getActivity());
+                progressDialog.setCancelable(false);
 
+                progressDialog.setMessage("Updating Team");
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setProgress(0);
+                progressDialog.show();
                 update_team_info_btn.setEnabled(false);
                 if(image_uri!=null){
                     new EncodeImage(image_uri).execute();
@@ -315,6 +323,10 @@ public class UpdateTeamInfoFragment extends Fragment implements View.OnClickList
                 String encoded_team_icon = result;
                 updateTeamInfo(encoded_team_icon);
             }
+            else {
+                progressDialog.dismiss();
+                Toast.makeText(context,"Something went wrong!\nPlease try again!",Toast.LENGTH_LONG).show();
+            }
         }
 
     }
@@ -337,6 +349,7 @@ public class UpdateTeamInfoFragment extends Fragment implements View.OnClickList
                     @Override
                     public void onSuccess(Void aVoid) {
                         update_team_info_btn.setEnabled(true);
+                        progressDialog.dismiss();
                         Toast.makeText(context, "Team Updated Successfully!", Toast.LENGTH_LONG).show();
                         HomeNavController.popBackStack();
                     }
@@ -345,6 +358,7 @@ public class UpdateTeamInfoFragment extends Fragment implements View.OnClickList
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         update_team_info_btn.setEnabled(true);
+                        progressDialog.dismiss();
                         Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                     }
                 });

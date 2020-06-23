@@ -1,5 +1,6 @@
 package com.example.cegepsoccerleague;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -51,6 +52,7 @@ public class ListOfTeamsFragment extends Fragment implements View.OnClickListene
     private String league_id;
     public Toolbar HomeToolbar;
     JSONObject userObject;
+    private static ProgressDialog progressDialog;
 
 
 
@@ -125,6 +127,13 @@ public class ListOfTeamsFragment extends Fragment implements View.OnClickListene
     }
 
     private void getUsers() {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setCancelable(false);
+
+        progressDialog.setMessage("Fetching Teams");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setProgress(0);
+        progressDialog.show();
         db.collection("users").whereEqualTo("user_type","TM").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -139,6 +148,7 @@ public class ListOfTeamsFragment extends Fragment implements View.OnClickListene
                     }
                     getTeams();
                 } else {
+                    progressDialog.dismiss();
                     Toast.makeText(context,task.getException().getLocalizedMessage(),Toast.LENGTH_LONG).show();
                 }
             }
@@ -154,6 +164,10 @@ public class ListOfTeamsFragment extends Fragment implements View.OnClickListene
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
+                    progressDialog.dismiss();
+                    if(task.getResult().size()==0){
+                        Toast.makeText(context,"No Teams Have Been Created Yet!",Toast.LENGTH_LONG).show();
+                    }
                     for (QueryDocumentSnapshot document : task.getResult()) {
 
                         try {
@@ -202,6 +216,7 @@ public class ListOfTeamsFragment extends Fragment implements View.OnClickListene
                         }
                     });
                 } else {
+                    progressDialog.dismiss();
                     Toast.makeText(context,task.getException().getLocalizedMessage(),Toast.LENGTH_LONG).show();
                 }
             }

@@ -1,5 +1,6 @@
 package com.example.cegepsoccerleague;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -54,6 +55,7 @@ public class AddScoreboardFragment extends Fragment implements View.OnClickListe
     private MaterialButton add_new_score_btn;
     private Bundle dataBundle;
     public Toolbar HomeToolbar;
+    private static ProgressDialog progressDialog;
 
     public AddScoreboardFragment() {
         // Required empty public constructor
@@ -191,6 +193,18 @@ public class AddScoreboardFragment extends Fragment implements View.OnClickListe
     }
 
     private void addScore() {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setCancelable(false);
+
+        if(getArguments().getString("from")!=null && getArguments().getString("from").equals("update-score")){
+            progressDialog.setMessage("Updating Score");
+        }
+        else {
+            progressDialog.setMessage("Creating New Score");
+        }
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setProgress(0);
+        progressDialog.show();
         add_new_score_btn.setEnabled(false);
         String team1_id = dataBundle.getString("team1_id");
         String team2_id = dataBundle.getString("team2_id");
@@ -237,6 +251,7 @@ public class AddScoreboardFragment extends Fragment implements View.OnClickListe
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
+                            progressDialog.dismiss();
                             add_new_score_btn.setEnabled(true);
                             Toast.makeText(context, "Player Updated Successfully!", Toast.LENGTH_LONG).show();
                             HomeNavController.popBackStack();
@@ -246,6 +261,7 @@ public class AddScoreboardFragment extends Fragment implements View.OnClickListe
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
                             add_new_score_btn.setEnabled(true);
                             Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                         }
@@ -258,6 +274,7 @@ public class AddScoreboardFragment extends Fragment implements View.OnClickListe
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
+                            progressDialog.dismiss();
                             db.collection("schedules").document(match_id).delete();
                             add_new_score_btn.setEnabled(true);
                             Toast.makeText(context, "Score Added Successfully!", Toast.LENGTH_LONG).show();
@@ -268,6 +285,7 @@ public class AddScoreboardFragment extends Fragment implements View.OnClickListe
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
                             add_new_score_btn.setEnabled(true);
                             Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                         }

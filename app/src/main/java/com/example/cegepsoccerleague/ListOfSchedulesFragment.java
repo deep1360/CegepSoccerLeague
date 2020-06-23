@@ -1,5 +1,6 @@
 package com.example.cegepsoccerleague;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -50,6 +51,7 @@ public class ListOfSchedulesFragment extends Fragment implements View.OnClickLis
     private RecyclerView schedules_list_recycler_view;
     private ArrayList<Schedules_List_model> schedulesArrayList;
     private Schedules_Rec_adapter schedules_rec_adapter;
+    private static ProgressDialog progressDialog;
 
 
     public ListOfSchedulesFragment() {
@@ -96,6 +98,10 @@ public class ListOfSchedulesFragment extends Fragment implements View.OnClickLis
                 create_schedule_btn.setVisibility(View.VISIBLE);
                 dataBundle = getArguments();
             }
+            else if(getArguments().getString("from") != null && getArguments().getString("from").equals("TM-matches")){
+                create_schedule_btn.setVisibility(View.GONE);
+                dataBundle = getArguments();
+            }
         } else {
             create_schedule_btn.setVisibility(View.GONE);
         }
@@ -118,6 +124,20 @@ public class ListOfSchedulesFragment extends Fragment implements View.OnClickLis
 
     /*----------Getting Team Data and Creating a Json Object Of Teams------------*/
     private void getTeams() {
+        if(progressDialog!=null && progressDialog.isShowing()){
+            progressDialog.dismiss();
+        }
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setCancelable(true);
+        if(getArguments()!=null) {
+            progressDialog.setMessage("Fetching Match Schedules");
+        }
+        else {
+            progressDialog.setMessage("Processing");
+        }
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setProgress(0);
+        progressDialog.show();
         db.collection("teams").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -130,7 +150,17 @@ public class ListOfSchedulesFragment extends Fragment implements View.OnClickLis
                             e.printStackTrace();
                         }
                     }
-                    getSchedules();
+                    if(getArguments()!=null) {
+                        if (dataBundle.getString("from").equals("league Features")) {
+                            getSchedules();
+                        }
+                        else if(dataBundle.getString("from").equals("TM-matches")){
+                            getTeamSchedules();
+                        }
+                    }
+                    else {
+                        getSchedules();
+                    }
                 } else {
                     Toast.makeText(context, task.getException().getLocalizedMessage(), Toast.LENGTH_LONG).show();
                 }
@@ -163,7 +193,11 @@ public class ListOfSchedulesFragment extends Fragment implements View.OnClickLis
                     int yy = c.get(Calendar.YEAR);
                     int mm = c.get(Calendar.MONTH) + 1;
                     int dd = c.get(Calendar.DAY_OF_MONTH);
-
+                    QuerySnapshot documentSnapshots = task.getResult();
+                    if(documentSnapshots.size()==0){
+                        Toast.makeText(context,"Match Schedule Is Not Created Yet!",Toast.LENGTH_LONG).show();
+                    }
+                    progressDialog.dismiss();
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         try {
                             JSONObject Team1object = (JSONObject) teamsObject.get(document.get("team1_id").toString());
@@ -262,6 +296,135 @@ public class ListOfSchedulesFragment extends Fragment implements View.OnClickLis
                     });
                 } else {
                     Toast.makeText(context, task.getException().getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private void getTeamSchedules(){
+        db.collection("teams").whereEqualTo("team_manager_id",user.getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                for (final QueryDocumentSnapshot Teamdocument : task.getResult()) {
+                    db.collection("schedules").whereEqualTo("team1_id",Teamdocument.getId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            QuerySnapshot ds = task.getResult();
+                            int count = 0;
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                count++;
+                                try {
+                                    JSONObject Team1object = (JSONObject) teamsObject.get(document.get("team1_id").toString());
+                                    JSONObject Team2object = (JSONObject) teamsObject.get(document.get("team2_id").toString());
+                                    schedulesArrayList.add(new Schedules_List_model(document.getId(),
+                                            document.get("match_location").toString(),
+                                            document.get("match_date").toString(),
+                                            document.get("match_time").toString(),
+                                            document.get("league_id").toString(),
+                                            document.get("team1_id").toString(),
+                                            Team1object.getString("team_name"),
+                                            Team1object.getString("team_icon"),
+                                            document.get("team2_id").toString(),
+                                            Team2object.getString("team_name"),
+                                            Team2object.getString("team_icon")));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                if (count == ds.size()){
+                                    db.collection("schedules").whereEqualTo("team2_id",Teamdocument.getId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            progressDialog.dismiss();
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                                try {
+                                                    JSONObject Team1object = (JSONObject) teamsObject.get(document.get("team1_id").toString());
+                                                    JSONObject Team2object = (JSONObject) teamsObject.get(document.get("team2_id").toString());
+                                                    schedulesArrayList.add(new Schedules_List_model(document.getId(),
+                                                            document.get("match_location").toString(),
+                                                            document.get("match_date").toString(),
+                                                            document.get("match_time").toString(),
+                                                            document.get("league_id").toString(),
+                                                            document.get("team1_id").toString(),
+                                                            Team1object.getString("team_name"),
+                                                            Team1object.getString("team_icon"),
+                                                            document.get("team2_id").toString(),
+                                                            Team2object.getString("team_name"),
+                                                            Team2object.getString("team_icon")));
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                            schedules_rec_adapter.notifyDataSetChanged();
+                                        }
+                                    });
+                                }
+                            }
+
+                            if(ds.size()==0){
+                                db.collection("schedules").whereEqualTo("team2_id",Teamdocument.getId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        QuerySnapshot documentSnapshots = task.getResult();
+                                        if(documentSnapshots.size()==0){
+                                            Toast.makeText(context,"Your Team Does Not Have Matches Yet!",Toast.LENGTH_LONG).show();
+                                        }
+                                        progressDialog.dismiss();
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            try {
+                                                JSONObject Team1object = (JSONObject) teamsObject.get(document.get("team1_id").toString());
+                                                JSONObject Team2object = (JSONObject) teamsObject.get(document.get("team2_id").toString());
+                                                schedulesArrayList.add(new Schedules_List_model(document.getId(),
+                                                        document.get("match_location").toString(),
+                                                        document.get("match_date").toString(),
+                                                        document.get("match_time").toString(),
+                                                        document.get("league_id").toString(),
+                                                        document.get("team1_id").toString(),
+                                                        Team1object.getString("team_name"),
+                                                        Team1object.getString("team_icon"),
+                                                        document.get("team2_id").toString(),
+                                                        Team2object.getString("team_name"),
+                                                        Team2object.getString("team_icon")));
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                        schedules_rec_adapter.notifyDataSetChanged();
+                                    }
+                                });
+                            }
+                            schedules_rec_adapter.notifyDataSetChanged();
+                            schedules_rec_adapter.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    RecyclerView.ViewHolder viewHolder = (RecyclerView.ViewHolder) view.getTag();
+                                    int position = viewHolder.getAdapterPosition();
+                                    Bundle dataBundle = new Bundle();
+                                    dataBundle.putString("match_id",schedulesArrayList.get(position).getMatch_id());
+                                    dataBundle.putString("match_date",schedulesArrayList.get(position).getMatch_date());
+                                    dataBundle.putString("match_time",schedulesArrayList.get(position).getMatch_time());
+                                    dataBundle.putString("match_location",schedulesArrayList.get(position).getMatch_location());
+                                    dataBundle.putString("team1_id",schedulesArrayList.get(position).getTeam1_id());
+                                    dataBundle.putString("team1_name",schedulesArrayList.get(position).getTeam1_name());
+                                    dataBundle.putString("team1_icon",schedulesArrayList.get(position).getTeam1_icon());
+                                    dataBundle.putString("team2_id",schedulesArrayList.get(position).getTeam2_id());
+                                    dataBundle.putString("team2_name",schedulesArrayList.get(position).getTeam2_name());
+                                    dataBundle.putString("team2_icon",schedulesArrayList.get(position).getTeam2_icon());
+                                    dataBundle.putString("league_id",schedulesArrayList.get(position).getLeague_id());
+                                    if (getArguments() != null) {
+                                        if (getArguments().getString("from") != null && getArguments().getString("from").equals("league Features")) {
+                                            dataBundle.putString("from", "league Features");
+                                            HomeNavController.navigate(R.id.matchScheduleInfoFragment, dataBundle);
+                                        }
+                                        else if(getArguments().getString("from") != null && getArguments().getString("from").equals("TM-matches")){
+                                            HomeNavController.navigate(R.id.matchScheduleInfoFragment,dataBundle);
+                                        }
+                                    } else {
+                                        HomeNavController.navigate(R.id.matchScheduleInfoFragment,dataBundle);
+                                    }
+                                }
+                            });
+                        }
+                    });
                 }
             }
         });

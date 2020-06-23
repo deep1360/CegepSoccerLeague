@@ -1,5 +1,6 @@
 package com.example.cegepsoccerleague;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -42,6 +43,7 @@ public class PlayerInfoFragment extends Fragment implements View.OnClickListener
     private TextView player_info_age, player_info_position, player_info_name;
     private MaterialButton edit_player_info_btn, delete_player_btn;
     private String player_id="";
+    private static ProgressDialog progressDialog;
 
 
     public PlayerInfoFragment() {
@@ -131,14 +133,21 @@ public class PlayerInfoFragment extends Fragment implements View.OnClickListener
 
         delelte_continue_btn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view) {progressDialog = new ProgressDialog(getActivity());
+                progressDialog.setCancelable(false);
+
+                progressDialog.setMessage("Deleting Player");
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setProgress(0);
+                progressDialog.show();
+                Delete_Player_Dialog.dismiss();
                 db.collection("players").document(player_id)
                         .delete()
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
                                 Toast.makeText(context,"Player removed from team successfully!",Toast.LENGTH_LONG).show();
-                                Delete_Player_Dialog.dismiss();
+                                progressDialog.dismiss();
                                 HomeNavController.popBackStack();
                             }
                         })
@@ -146,7 +155,7 @@ public class PlayerInfoFragment extends Fragment implements View.OnClickListener
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Toast.makeText(context,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
-                                Delete_Player_Dialog.dismiss();
+                                progressDialog.dismiss();
                             }
                         });
             }
