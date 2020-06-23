@@ -37,6 +37,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ public class UpdateScheduleFragment extends Fragment implements View.OnClickList
     private TextView update_team1_team2_error_txt;
     private ImageView us_team1_img_view, us_team2_img_view;
     private ProgressDialog progressDialog;
+    private String previousDate = "";
 
     public UpdateScheduleFragment() {
         // Required empty public constructor
@@ -112,6 +114,7 @@ public class UpdateScheduleFragment extends Fragment implements View.OnClickList
         if (getArguments() != null) {
             dataBundle = getArguments();
             /*----------- Displaying all Data of Schedule On Screen --------------*/
+            previousDate = getArguments().getString("match_date");
             update_match_date_txt_view.setText(getArguments().getString("match_date"));
             update_match_time_txt_view.setText(getArguments().getString("match_time"));
             update_match_location_layout.getEditText().setText(getArguments().getString("match_location"));
@@ -277,9 +280,51 @@ public class UpdateScheduleFragment extends Fragment implements View.OnClickList
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     if (task.getResult().size() > 0) {
-                        progressDialog.dismiss();
-                        update_team1_team2_error_txt.setVisibility(View.VISIBLE);
-                        update_schedule_btn.setEnabled(true);
+                        if(task.getResult().size()==1) {
+                            for (QueryDocumentSnapshot ds : task.getResult()) {
+                                if(ds.getString("match_date").equals(previousDate)){
+                                    final Map<String, Object> schedule_data = new HashMap<>();
+                                    schedule_data.put("match_date", match_date);
+                                    schedule_data.put("match_time", match_time);
+                                    schedule_data.put("match_location", match_location);
+                                    schedule_data.put("team1_id", team1_id);
+                                    schedule_data.put("team2_id", team2_id);
+                                    schedule_data.put("league_id", league_id);
+
+                                    //Updating Match Schedule in database
+                                    db.collection("schedules").document(dataBundle.getString("match_id"))
+                                            .set(schedule_data)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    progressDialog.dismiss();
+                                                    update_schedule_btn.setEnabled(true);
+                                                    Toast.makeText(context, "Schedule Updated Successfully!", Toast.LENGTH_LONG).show();
+                                                    HomeNavController.popBackStack();
+                                                    HomeNavController.popBackStack();
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    progressDialog.dismiss();
+                                                    update_schedule_btn.setEnabled(true);
+                                                    Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+                                }
+                                else {
+                                    progressDialog.dismiss();
+                                    update_team1_team2_error_txt.setVisibility(View.VISIBLE);
+                                    update_schedule_btn.setEnabled(true);
+                                }
+                            }
+                        }
+                        else {
+                            progressDialog.dismiss();
+                            update_team1_team2_error_txt.setVisibility(View.VISIBLE);
+                            update_schedule_btn.setEnabled(true);
+                        }
                     } else {
                         db.collection("schedules")
                                 .whereIn("team2_id", Arrays.asList(team1_id, team2_id))
@@ -289,9 +334,52 @@ public class UpdateScheduleFragment extends Fragment implements View.OnClickList
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                 if (task.isSuccessful()) {
                                     if (task.getResult().size() > 0) {
-                                        progressDialog.dismiss();
-                                        update_team1_team2_error_txt.setVisibility(View.VISIBLE);
-                                        update_schedule_btn.setEnabled(true);
+                                        if(task.getResult().size()==1) {
+                                            for (QueryDocumentSnapshot ds : task.getResult()) {
+                                                if(ds.getString("match_date").equals(previousDate)){
+                                                    final Map<String, Object> schedule_data = new HashMap<>();
+                                                    schedule_data.put("match_date", match_date);
+                                                    schedule_data.put("match_time", match_time);
+                                                    schedule_data.put("match_location", match_location);
+                                                    schedule_data.put("team1_id", team1_id);
+                                                    schedule_data.put("team2_id", team2_id);
+                                                    schedule_data.put("league_id", league_id);
+
+                                                    //Updating Match Schedule in database
+                                                    db.collection("schedules").document(dataBundle.getString("match_id"))
+                                                            .set(schedule_data)
+                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void aVoid) {
+                                                                    progressDialog.dismiss();
+                                                                    update_schedule_btn.setEnabled(true);
+                                                                    Toast.makeText(context, "Schedule Updated Successfully!", Toast.LENGTH_LONG).show();
+                                                                    HomeNavController.popBackStack();
+                                                                    HomeNavController.popBackStack();
+                                                                }
+                                                            })
+                                                            .addOnFailureListener(new OnFailureListener() {
+                                                                @Override
+                                                                public void onFailure(@NonNull Exception e) {
+                                                                    progressDialog.dismiss();
+                                                                    update_schedule_btn.setEnabled(true);
+                                                                    Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                                                                }
+                                                            });
+                                                }
+                                                else {
+                                                    progressDialog.dismiss();
+                                                    update_team1_team2_error_txt.setVisibility(View.VISIBLE);
+                                                    update_schedule_btn.setEnabled(true);
+                                                }
+                                            }
+                                        }
+                                        else {
+                                            progressDialog.dismiss();
+                                            update_team1_team2_error_txt.setVisibility(View.VISIBLE);
+                                            update_schedule_btn.setEnabled(true);
+                                        }
+
                                     } else {
                                         //Creating a data object to add schedule in database
                                         final Map<String, Object> schedule_data = new HashMap<>();
@@ -310,7 +398,7 @@ public class UpdateScheduleFragment extends Fragment implements View.OnClickList
                                                     public void onSuccess(Void aVoid) {
                                                         progressDialog.dismiss();
                                                         update_schedule_btn.setEnabled(true);
-                                                        Toast.makeText(context, "Schedule Added Successfully!", Toast.LENGTH_LONG).show();
+                                                        Toast.makeText(context, "Schedule Updated Successfully!", Toast.LENGTH_LONG).show();
                                                         HomeNavController.popBackStack();
                                                         HomeNavController.popBackStack();
                                                     }

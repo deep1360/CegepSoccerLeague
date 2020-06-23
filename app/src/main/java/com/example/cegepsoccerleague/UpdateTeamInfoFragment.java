@@ -20,6 +20,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -131,7 +132,15 @@ public class UpdateTeamInfoFragment extends Fragment implements View.OnClickList
     @Override
     public void onClick(View view) {
         if (view == update_team_icon_cv | view == update_team_icon_txt){
-            SelectProfilePic();
+            if(team_has_icon){
+                RemovePhotoDialog();
+            }
+            else if(image_uri!=null){
+                RemovePhotoDialog();
+            }
+            else {
+                SelectProfilePic();
+            }
         }
         else if(view == update_team_info_btn){
             update_team_name_layout.setErrorEnabled(false);
@@ -169,6 +178,30 @@ public class UpdateTeamInfoFragment extends Fragment implements View.OnClickList
                 }
             }
         }
+    }
+
+    private void RemovePhotoDialog() {
+        final CharSequence[] options = {"Remove Photo", "Select Other Photo", "Cancel"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Change Photo!");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (options[item].equals("Remove Photo")) {
+                    image_uri = null;
+                    team_has_icon = false;
+                    update_team_icon_img_view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.add_league_icon));
+                } else if (options[item].equals("Select Other Photo")) {
+                    dialog.dismiss();
+                    SelectProfilePic();
+
+                } else if (options[item].equals("Cancel")) {
+
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
     }
 
     /*-------- Below Code is for selecting image from galary or camera -----------*/

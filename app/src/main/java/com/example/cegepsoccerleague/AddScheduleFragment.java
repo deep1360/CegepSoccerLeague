@@ -345,7 +345,7 @@ public class AddScheduleFragment extends Fragment implements View.OnClickListene
                 add_schedule_btn.setEnabled(false);
                 progressDialog = new ProgressDialog(getActivity());
                 progressDialog.setCancelable(false);
-                progressDialog.setMessage("Creating New Team");
+                progressDialog.setMessage("Creating New Schedule");
                 progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 progressDialog.setProgress(0);
                 progressDialog.show();
