@@ -47,6 +47,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -368,31 +370,70 @@ public class UpdateTeamInfoFragment extends Fragment implements View.OnClickList
 
         String team_name = update_team_name_layout.getEditText().getText().toString().trim();
         String team_contact_number = update_team_contact_layout.getEditText().getText().toString().trim();
-        Map<String, Object> team_data = new HashMap<>();
+        final Map<String, Object> team_data = new HashMap<>();
         team_data.put("team_name", team_name);
         team_data.put("team_icon", encoded_team_icon);
         team_data.put("team_manager_id", user.getUid());
         team_data.put("team_manager_contact",team_contact_number);
         team_data.put("league_id",league_id);
 
-        // Add a new document with auto generated ID
-        db.collection("teams").document(team_id)
-                .set(team_data)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+        db.collection("teams").whereEqualTo("team_name",team_name)
+                .whereEqualTo("league_id",league_id).get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        update_team_info_btn.setEnabled(true);
-                        progressDialog.dismiss();
-                        Toast.makeText(context, "Team Updated Successfully!", Toast.LENGTH_LONG).show();
-                        HomeNavController.popBackStack();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        update_team_info_btn.setEnabled(true);
-                        progressDialog.dismiss();
-                        Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.getResult().size()>0){
+                            for (QueryDocumentSnapshot document : task.getResult()){
+                                if(document.getId().equals(team_id)){
+                                    db.collection("teams").document(team_id)
+                                            .set(team_data)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    update_team_info_btn.setEnabled(true);
+                                                    progressDialog.dismiss();
+                                                    Toast.makeText(context, "Team Updated Successfully!", Toast.LENGTH_LONG).show();
+                                                    HomeNavController.popBackStack();
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    update_team_info_btn.setEnabled(true);
+                                                    progressDialog.dismiss();
+                                                    Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+                                }
+                                else {
+                                    update_team_name_layout.setError("Team name already exists!");
+                                    progressDialog.dismiss();
+                                    update_team_info_btn.setEnabled(true);
+                                }
+                            }
+                        }
+                        else {
+                            // Add a new document with auto generated ID
+                            db.collection("teams").document(team_id)
+                                    .set(team_data)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            update_team_info_btn.setEnabled(true);
+                                            progressDialog.dismiss();
+                                            Toast.makeText(context, "Team Updated Successfully!", Toast.LENGTH_LONG).show();
+                                            HomeNavController.popBackStack();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            update_team_info_btn.setEnabled(true);
+                                            progressDialog.dismiss();
+                                            Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                        }
                     }
                 });
     }
